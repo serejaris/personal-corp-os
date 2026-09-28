@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **harness** skill — one header sets the agent's working mode for the session: role (executor, orchestrator, critic), subagent model, effort, subagent limit; bilingual READMEs.
+
+### Changed
+- **manager** defaults to orchestrator + critic at low effort with up to 3 subagents when no `/harness` header is given.
+
 ## [5.0.1] - 2026-09-17
 
 ### Fixed

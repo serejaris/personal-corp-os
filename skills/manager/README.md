@@ -99,6 +99,8 @@ The skill:
 4. If it closes an issue, removes that issue from active day/week plans or replaces it with the next open child
 5. Returns a short report — Done / Skipped / Plan cleanup
 
+**Working mode:** by default manager orchestrates and critiques at low effort; a `/harness` header in the arguments overrides it (see [harness](../harness/)).
+
 **Read mode (status query):**
 
 > "what about track X?"

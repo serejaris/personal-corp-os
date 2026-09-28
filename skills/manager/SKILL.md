@@ -128,6 +128,14 @@ digraph mode {
 
 **Do NOT use manager for:** creating ideas without artifacts (that's brainstorming); closing an issue without explicit user instruction; batch CRM updates (that's a CRM skill, not manager).
 
+## Default working mode
+
+Without a header, manager runs as `режим: оркестратор, критик · эффорт: низкий · макс: 3` (orchestrator and critic, low effort, up to 3 subagents); the subagent model is the current session's model.
+
+A `/harness` header in the invocation arguments overrides these values.
+
+What each role means lives in the `harness` skill. If that skill is not installed, work by these values: plan and hand tasks to subagents, verify their results against the files before reporting.
+
 ## Output language
 
 Output language matches the user's input language and project conventions. Technical tokens remain as-is and are not translated: issue names (`<repo>#<N>`), labels (`W18`, `retro:W17`, `backlog`), commands (`gh issue comment`), file paths, original English titles of issues in quotes.
