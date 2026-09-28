@@ -239,6 +239,7 @@ Use Personal Corp skills to plan my week.
 |---|---|
 | [idea](./skills/idea/) | Захват одной озвученной идеи в папку с провенансом и дедупом по индексу |
 | [grill-me](./skills/grill-me/) | Интервью по одному вопросу за раз, пока замысел не станет ясным |
+| [harness](./skills/harness/) | Одна шапка задаёт режим агента: роль, модель субагентов, эффорт, лимит субагентов |
 | [to-prd](./skills/to-prd/) | Синтез обсуждения в `PRD.md` без нового интервью |
 | [to-issues](./skills/to-issues/) | Разбивка PRD на вертикальные срезы `tasks/NN-slug.md` с критериями |
 | [gh-issues](./skills/gh-issues/) | Работа с GitHub Issues через CLI с хранением контекста сессии |
