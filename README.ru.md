@@ -232,6 +232,8 @@ Use Personal Corp skills to plan my week.
 | [manager](./skills/manager/) | Двусторонний мост между сессией и GitHub Issues, срез по трекам |
 | [weekly-retro](./skills/weekly-retro/) | Недельное ретро: факты, scorecard, Area Interviews и предложенные цели Областей |
 | [weekly-planning](./skills/weekly-planning/) | Приоритизированные outcomes и живая полная неделя, которую обновляет daily отдела |
+| [daily](./skills/daily/) | Дневной фокус штаба: открытые задачи всех отделов в файле дня `tasks/ГГГГ-ММ-ДД.md` |
+| [retro](./skills/retro/) | Ретро недели штаба: сделано, застряло, повторы по всем отделам в `tasks/retro-ГГГГ-WNN.md` |
 
 ### От замысла к задачам
 

@@ -230,6 +230,8 @@ Replace `cc-analytics` with any skill name from the table below.
 | [manager](./skills/manager/) | Two-way bridge between the session and GitHub Issues, cross-repo status |
 | [weekly-retro](./skills/weekly-retro/) | Weekly retro: facts, scorecard, Area Interviews, and proposed Area goals |
 | [weekly-planning](./skills/weekly-planning/) | Prioritized outcomes plus a living full-week view refreshed by department daily |
+| [daily](./skills/daily/) | HQ daily focus: open tasks from all departments in a day file `tasks/YYYY-MM-DD.md` |
+| [retro](./skills/retro/) | HQ weekly retro: done, stuck, and repeats across all departments in `tasks/retro-YYYY-WNN.md` |
 
 ### From intent to tasks
 
