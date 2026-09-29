@@ -238,6 +238,7 @@ Replace `cc-analytics` with any skill name from the table below.
 | [idea](./skills/idea/) | Capture one voiced idea into a provenance-tracked folder with index dedup |
 | [grill-me](./skills/grill-me/) | One question at a time until the plan is actually clear |
 | [harness](./skills/harness/) | One header sets the agent's mode: role, subagent model, effort, subagent limit |
+| [corp-new](./skills/corp-new/) | Create a new HQ department: rules, private repo, two-way link with the HQ |
 | [to-prd](./skills/to-prd/) | Synthesize the conversation into `PRD.md` with no new interview |
 | [to-issues](./skills/to-issues/) | Split a PRD into vertical `tasks/NN-slug.md` slices with acceptance criteria |
 | [gh-issues](./skills/gh-issues/) | Manage GitHub Issues through the CLI with session context |

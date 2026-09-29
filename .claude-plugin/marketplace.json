@@ -10,7 +10,7 @@
       "name": "personal-corp-os",
       "source": "./",
       "description": "Personal Corp framework: run your business with AI agents through GitHub. Includes planning, retro, GitHub ops, department repositories, safe public artifact releases, product management skills (PRD, prioritization, competitive analysis, feedback, metrics, roadmap), Telegram and agent-gateway workflows, meeting copilot, html-draft diagrams, media/art-direction workflows, and utility skills.",
-      "version": "5.0.1",
+      "version": "5.1.0",
       "author": {
         "name": "Sereja Ris"
       },

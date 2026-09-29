@@ -7,7 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [5.1.0] - 2026-09-29
+
 ### Added
+- **corp-new** skill — creates a new HQ department (rules file, skills folder, private repository, two-way link with the HQ); installs the HQ from agent-starter if missing; bilingual READMEs.
 - **harness** skill — one header sets the agent's working mode for the session: role (executor, orchestrator, critic), subagent model, effort, subagent limit; bilingual READMEs.
 
 ### Changed

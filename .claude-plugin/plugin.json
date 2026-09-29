@@ -1,7 +1,7 @@
 {
   "name": "personal-corp-os",
   "description": "Personal Corp framework: run your business with AI agents through GitHub, department repos, safe public releases, Telegram, agent gateways, html-draft diagrams, and media/art-direction workflows",
-  "version": "5.0.1",
+  "version": "5.1.0",
   "author": {
     "name": "Sereja Ris",
     "email": "ris@sereja.tech",
