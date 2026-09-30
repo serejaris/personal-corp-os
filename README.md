@@ -266,7 +266,8 @@ Replace `cc-analytics` with any skill name from the table below.
 |---|---|
 | [art-director](./skills/art-director/) | Iterative visual style search with a process log and a decision graph |
 | [html-draft](./skills/html-draft/) | One technical diagram in flat blueprint style: architecture, flows |
-| [parallel-design-variants](./skills/parallel-design-variants/) | Parallel bake-off through subagents, gallery, vote, then a mix |
+| [make-landing](./skills/make-landing/) | Reference-led design variants: frozen concepts, gallery, human choice and a second round |
+| [make-3d](./skills/make-3d/) | 3D variants in scene copies, matching image sheets, human choice and transfer to the canon |
 
 ### Agent orchestration
 

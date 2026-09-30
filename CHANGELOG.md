@@ -8,7 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **make-3d** skill — builds 3D variants in isolated scene copies, presents matching image sheets for human selection, and transfers the chosen model to the canon; bilingual READMEs.
+- **make-landing** skill — reference-led 2D design variants with full concepts frozen before code, independent authors, browser checks, a gallery, human selection and a second round mixing winners; bilingual READMEs.
 - **benchmark** skill — runs pipeline variants (ASR engines, the model that writes notes, the judge model) one by one in an isolated container; measures time, cost per hour of input in USD and RUB with price source and date, WER/CER and term accuracy for ASR, code checks and a judge of a different model for LLM steps; writes results.json/csv and a static analytics page; bilingual READMEs.
+
+### Changed
+- **parallel-design-variants** became **make-landing**, merging reference-anchored variants with the frozen-concept workflow and bundled author role.
 
 ## [5.1.0] - 2026-09-29
 
