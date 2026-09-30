@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **benchmark** skill — runs pipeline variants (ASR engines, the model that writes notes, the judge model) one by one in an isolated container; measures time, cost per hour of input in USD and RUB with price source and date, WER/CER and term accuracy for ASR, code checks and a judge of a different model for LLM steps; writes results.json/csv and a static analytics page; bilingual READMEs.
+
 ## [5.1.0] - 2026-09-29
 
 ### Added

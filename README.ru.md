@@ -290,6 +290,7 @@ Use Personal Corp skills to plan my week.
 |---|---|
 | [meeting-copilot](./skills/meeting-copilot/) | Живой дашборд встречи: подготовка, обновление по транскрипту, решения |
 | [cc-analytics](./skills/cc-analytics/) | Отчёт по статистике использования Claude Code |
+| [benchmark](./skills/benchmark/) | Замер вариантов пайплайна (движок распознавания, модель конспекта, судья) в изолированном контейнере: время, цена часа с датой цен, качество |
 | [safe-public-release](./skills/safe-public-release/) | Провенанс, лицензии, allowlist и проверка на чистом клоне перед публикацией |
 | [tg-bot-ops](./skills/tg-bot-ops/) | Операционный плейбук для Telegram-ботов и шлюзов к агентам |
 

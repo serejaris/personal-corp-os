@@ -1,0 +1,28 @@
+{
+  "name": "weekly-meeting-2026-09",
+  "about": "Example task. Paths are relative to this file or absolute on the benchmark container.",
+  "audio": "input/meeting.m4a",
+  "language": "ru",
+  "terms": "input/terms.json",
+  "reference": "input/reference-transcript.md",
+  "reference_drop_regex": ["^Recording:.*$"],
+  "reference_note": "who produced the reference and how it was checked",
+  "asr": [
+    {"id": "elevenlabs-scribe-v2-terms", "engine": "elevenlabs", "model": "scribe_v2", "keyterms": true, "price": "elevenlabs.scribe_v2+keyterms"},
+    {"id": "elevenlabs-scribe-v2", "engine": "elevenlabs", "model": "scribe_v2", "keyterms": false, "price": "elevenlabs.scribe_v2"},
+    {"id": "gigaam-self-hosted", "engine": "openai_compat", "base_url": "http://10.0.0.10:8001/v1", "model": "gigaam-v3-e2e-rnnt", "key_env": "GIGAAM_API_KEY", "send_language": false, "price": "self_hosted"},
+    {"id": "whisper-large-v3-turbo", "engine": "faster_whisper", "model": "large-v3-turbo", "threads": 8, "compute_type": "int8", "price": "self_hosted"},
+    {"id": "openrouter-gemini-flash", "engine": "openrouter_audio", "model": "google/gemini-3.8-flash", "chunk_minutes": 10, "terms_prompt": true, "price": "openrouter.google/gemini-3.8-flash"}
+  ],
+  "not_run": [
+    {"id": "yandex-speechkit-async", "price": "yandex.speechkit.async", "reason": "no key yet"}
+  ],
+  "llm": {
+    "adapter": "examples/adapter_example.py",
+    "input_asr": "elevenlabs-scribe-v2-terms",
+    "variants": [
+      {"id": "notes-glm-5.3", "author": {"provider": "zai", "model": "glm-5.3"}, "judges": [{"provider": "anthropic-local", "model": "default"}]},
+      {"id": "notes-claude", "author": {"provider": "anthropic-local", "model": "default"}, "judges": [{"provider": "zai", "model": "glm-5.3"}]}
+    ]
+  }
+}

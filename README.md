@@ -288,6 +288,7 @@ Replace `cc-analytics` with any skill name from the table below.
 |---|---|
 | [meeting-copilot](./skills/meeting-copilot/) | Live meeting dashboard: prepare, update from transcript, close with decisions |
 | [cc-analytics](./skills/cc-analytics/) | HTML report of Claude Code usage statistics |
+| [benchmark](./skills/benchmark/) | Measure pipeline variants (ASR engine, notes model, judge) in an isolated container: time, cost per hour with dated prices, quality |
 | [safe-public-release](./skills/safe-public-release/) | Provenance, licensing, allowlist, and fresh-clone checks before publishing |
 | [tg-bot-ops](./skills/tg-bot-ops/) | Operations playbook for Telegram bots and agent gateways |
 

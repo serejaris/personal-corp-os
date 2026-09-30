@@ -1,0 +1,25 @@
+{
+  "about": "Price table for score.py. Every item has source and date; re-check before publishing numbers. Keys are referenced by the task's variants (field price) or built as <provider>.<model> for LLM steps.",
+  "checked_at": "2026-09-30",
+  "fx": {
+    "USD_RUB": 84.4283,
+    "EUR_RUB": 96.0625,
+    "date": "2026-09-30",
+    "source": "https://www.cbr.ru/scripts/XML_daily.asp?date_req=30/09/2026"
+  },
+  "items": {
+    "elevenlabs.scribe_v2": {"kind": "per_hour", "usd": 0.22, "source": "https://elevenlabs.io/pricing/api", "checked": "2026-09-30", "note": "Scribe v2 batch, API price per hour of audio"},
+    "elevenlabs.scribe_v2+keyterms": {"kind": "per_hour", "usd": 0.27, "source": "https://elevenlabs.io/pricing/api", "checked": "2026-09-30", "note": "0.22 + keyterm prompting 0.05"},
+    "openai.gpt-transcribe": {"kind": "per_hour", "usd": 0.27, "source": "https://developers.openai.com/api/docs/pricing", "checked": "2026-09-30", "note": "$0.0045 per minute"},
+    "openrouter.openai/whisper-large-v3-turbo": {"kind": "per_hour", "usd": 0.012, "source": "https://openrouter.ai/api/v1/models?output_modalities=transcription", "checked": "2026-09-30", "note": "$0.00000333 per second"},
+    "openrouter.google/gemini-3.8-flash": {"kind": "tokens", "usd_per_mtok": {"audio_in": 0.75, "in": 0.75, "out": 3.75}, "audio_tokens_per_sec": 32, "est_out_tokens_per_hour": 25000, "source": "https://openrouter.ai/api/v1/models", "checked": "2026-09-30", "note": "32 audio tokens per second: https://ai.google.dev/gemini-api/docs/audio"},
+    "openrouter.openai/gpt-audio-mini": {"kind": "tokens", "usd_per_mtok": {"audio_in": 0.6, "in": 0.6, "out": 2.4}, "source": "https://openrouter.ai/api/v1/models", "checked": "2026-09-30", "note": "audio tokenization not published: cost only from a real run"},
+    "yandex.speechkit.async": {"kind": "per_hour", "rub": 47.6, "source": "https://yandex.cloud/ru-kz/docs/speechkit/pricing", "checked": "2026-09-30", "note": "0.01321666 RUB per second of two-channel audio, VAT included; the RU page answered with a captcha"},
+    "sber.salutespeech.legal": {"kind": "per_hour", "rub": 36.0, "source": "https://developers.sber.ru/docs/ru/salutespeech/tariffs/legal-tariffs", "checked": "2026-09-30", "note": "0.01 RUB per second, minimum 15 000 RUB per month; since 2026-07-15 not sold to new clients"},
+    "zai.glm-5.3": {"kind": "tokens", "usd_per_mtok": {"in": 1.4, "cache_read": 0.26, "cache_write": 1.4, "out": 4.4}, "source": "https://docs.z.ai/guides/overview/pricing", "checked": "2026-09-30"},
+    "zai.glm-5.3-flash": {"kind": "tokens", "usd_per_mtok": {"in": 0.15, "out": 0.5}, "source": "https://docs.z.ai/guides/overview/pricing", "checked": "2026-09-30", "note": "no separate cache price found: cached input counted at input price"},
+    "anthropic.claude-opus-5-5": {"kind": "tokens", "usd_per_mtok": {"in": 4, "cache_read": 0.2, "cache_write": 5, "out": 20}, "source": "https://claude.com/pricing", "checked": "2026-09-30"},
+    "anthropic.claude-sonnet-5-5": {"kind": "tokens", "usd_per_mtok": {"in": 2, "cache_read": 0.2, "cache_write": 2.5, "out": 10}, "source": "https://claude.com/pricing", "checked": "2026-09-30"},
+    "self_hosted": {"kind": "server_share", "eur_per_month": 60, "threads": 20, "note": "your server: monthly price and hardware threads; a run costs its CPU-seconds share of the month"}
+  }
+}
