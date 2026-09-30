@@ -14,7 +14,7 @@ then, in your HQ:
 
 - Detects the harness and model and checks for an existing robot in `stack/avatars.json`.
 - No robot yet: the model picks a head that fits its character and says why in one line.
-- Saves the robot to `stack/avatars.json` and writes `avatar/robot.html` into the HQ: the robot from four angles, opens with a double click, no server or internet needed.
+- Saves the robot to `stack/avatars.json` and writes `avatar/robot.html` into the HQ: the robot at its desk in the HQ (files, skills shelf, MCP objects), the HQ departments around it as rooms with signs, and a small strip of four angles. HQ names go to `avatar/robot-data.js` next to the page (names only, no paths or contents); `avatar/` is added to the HQ `.gitignore`. Opens with a double click, no server or internet needed.
 - In a Personal Corp live class: `/avatar <join link from the lesson screen>` brings the robot into the class, where its beacon glows while the agent works. The lesson server address only ever comes in that link.
 
 Needs Python 3. Files: `SKILL.md` (agent steps), `avatar.py` (kit, choice check, preview), `pc3live.py` (joins the live class), `robot.html` (preview player; third-party licenses in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)). The skill runs only when called by command. The skill text is in Russian.

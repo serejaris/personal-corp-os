@@ -9,8 +9,9 @@ pc-avatar), ключ харнес/семейство модели. Робот н
   python3 avatar.py start --harness claude-code --tape "opus 5.5"
       есть запись: печатает её; нет: печатает, из чего выбирать
   python3 avatar.py go --harness claude-code --company anthropic --tape "opus 5.5" --color clay-light --eyes pill
-      проверяет выбор, сохраняет робота, кладёт в штаб превью avatar/robot.html и открывает его в браузере (--no-open: не открывать)
-      и печатает код робота для pc3live.py join
+      проверяет выбор, сохраняет робота, кладёт в штаб страницу avatar/robot.html (робот за партой штаба, отделы вокруг)
+      и рядом avatar/robot-data.js (имена файлов, скиллов, MCP и отделов штаба), дописывает avatar/ в .gitignore штаба,
+      открывает страницу в браузере (--no-open: не открывать) и печатает код робота для pc3live.py join
   python3 avatar.py check <код>     разобрать код: запись или причина отказа
   python3 avatar.py code --harness codex --company openai --color mint --eyes visor --tape gpt-5.5
                                     собрать код без штаба (демо релея)
@@ -210,9 +211,13 @@ def cmd_go(a):
     print(record_line(key, rec))
     print('%s: %s' % ('Записано' if changed else 'Без изменений', hq / 'stack' / 'avatars.json'))
     print('Код: ' + code)
-    page = write_preview(hq, code)
+    page, depts = write_preview(hq, code)
     if page:
-        print('Превью: %s (открывается двойным кликом, сервер и интернет не нужны)' % page)
+        shown = ', '.join(d['title'] or d['folder'] for d in depts[:8])
+        print('Отделы: %s' % ('%d: %s%s' % (len(depts), shown, ' и ещё %d' % (len(depts) - 8) if len(depts) > 8 else '') if depts else 'в правилах штаба нет ссылок на отделы'))
+        print('Превью: %s (робот за партой штаба и отделы вокруг; открывается двойным кликом, сервер и интернет не нужны)' % page)
+        if ignore_avatar(hq):
+            print('.gitignore: дописал avatar/, страница в git не нужна')
         if not a.no_open:
             webbrowser.open(page.as_uri())
     else:
@@ -222,17 +227,42 @@ def cmd_go(a):
 
 
 def write_preview(hq, code):
-    """Страница-превью робота в штабе: avatar/robot.html, плеер robot.html рядом со скриптом плюс код робота."""
+    """Страница робота в штабе: avatar/robot.html (плеер robot.html рядом со скриптом плюс код робота) и рядом
+    avatar/robot-data.js, имена штаба для сцены: файлы, скиллы, MCP-серверы и отделы. Возвращает (страница, отделы)."""
     src = Path(__file__).with_name('robot.html')
     if not src.exists():
-        return None
+        return None, []
     html = src.read_text(encoding='utf-8')
     if MARK not in html:
         sys.exit('robot.html без метки %s: поставь скилл заново' % MARK)
     page = hq / 'avatar' / 'robot.html'
     page.parent.mkdir(parents=True, exist_ok=True)
     page.write_text(html.replace(MARK, '<script>window.ROBOT = %s;</script>' % json.dumps({'code': code}), 1), encoding='utf-8')
-    return page
+    inv = collect_inventory(hq)
+    depts = collect_depts(hq)
+    data = {'hq': hq.name[:40], 'inventory': {k: inv[k] for k in ('files', 'skills', 'mcp')},
+            'depts': depts[:DEPTS_MAX], 'total': len(depts)}
+    (page.parent / 'robot-data.js').write_text(
+        '/* Штаб для страницы робота: только имена, без путей и содержимого. Пишет avatar.py go, руками не править. */\n'
+        'window.ROBOT_DATA = %s;\n' % json.dumps(data, ensure_ascii=True, indent=1), encoding='utf-8')
+    return page, depts
+
+
+def ignore_avatar(hq):
+    """Страница робота собирается заново и в git не нужна: дописать avatar/ в .gitignore штаба-репозитория.
+    True, если строка дописана сейчас."""
+    if not (hq / '.git').exists():
+        return False
+    gi = hq / '.gitignore'
+    try:
+        text = gi.read_text(encoding='utf-8') if gi.exists() else ''
+    except OSError:
+        return False
+    if any(ln.strip() in ('avatar', 'avatar/', '/avatar', '/avatar/') for ln in text.splitlines()):
+        return False
+    sep = '' if not text or text.endswith('\n') else '\n'
+    gi.write_text(text + sep + '# страница робота из скилла avatar, собирается заново\navatar/\n', encoding='utf-8')
+    return True
 
 # ───────── парта на уроке: только имена из штаба ─────────
 
@@ -275,16 +305,78 @@ def collect_inventory(hq):
         mcp += re.findall(r'^\[mcp_servers\.([A-Za-z0-9_-]+)\]', (Path.home() / '.codex' / 'config.toml').read_text(encoding='utf-8'), re.M)
     except OSError:
         pass
-    depts = []
-    for rules in ('AGENTS.md', 'CLAUDE.md'):
+    depts = [d['folder'] for d in collect_depts(hq)]
+    return {'files': _names(files, 40), 'skills': _names(skills, 40), 'mcp': _names(mcp, 16), 'depts': _names(depts, 12)}
+
+
+# ───────── отделы: карта отделов в правилах штаба ─────────
+
+DEPTS_MAX = 40
+_RULES = ('AGENTS.md', 'CLAUDE.md', 'projects.md')   # projects.md: карта отделов бывает вынесена туда
+_LINK = re.compile(r'\.\./([A-Za-z0-9_.-]+)')
+_CORP = re.compile(r'(?<![\w./-])(corp-[A-Za-z0-9_-]+)')
+_NOT_NAME = re.compile(r'(?i)\b(agents?\.md|claude\.md|readme\.md|agent guide|agent notes|project guidelines|guidelines)\b')
+
+
+def _rules_text(hq):
+    """Файлы правил штаба подряд: AGENTS.md и CLAUDE.md (один раз, если это ссылка друг на друга), projects.md."""
+    seen, parts = set(), []
+    for n in _RULES:
+        f = hq / n
         try:
-            text = (hq / rules).read_text(encoding='utf-8')
+            real = f.resolve()
+            if real in seen or not f.is_file():
+                continue
+            seen.add(real)
+            parts.append(f.read_text(encoding='utf-8', errors='replace'))
         except OSError:
             continue
-        for m in re.findall(r'\.\./([A-Za-z0-9_.-]+)', text):
-            if (hq.parent / m).is_dir():
-                depts.append(m)
-    return {'files': _names(files, 40), 'skills': _names(skills, 40), 'mcp': _names(mcp, 16), 'depts': _names(depts, 12)}
+    return '\n'.join(parts)
+
+
+def _dept_title(d):
+    """Имя отдела с вывески: первая строка его файла правил, если это заголовок, который называет отдел.
+    «# Garden — Отдел сада» даёт «Отдел сада»; заголовок-папка («# corp-study») или имя файла («# AGENTS.md»): None."""
+    first = ''
+    for n in ('AGENTS.md', 'CLAUDE.md'):
+        try:
+            lines = (d / n).read_text(encoding='utf-8', errors='replace').splitlines()
+        except OSError:
+            continue
+        first = next((ln.strip() for ln in lines if ln.strip()), '')
+        break
+    if not first.startswith('#'):
+        return None
+    names = []
+    for part in re.split(r'\s+[—–-]\s+', first.lstrip('#').replace('`', '').replace('*', '').strip()):
+        p = _NOT_NAME.sub('', part).strip(' -—–:·.')
+        if p and p.lower() != d.name.lower() and not re.fullmatch(r'[A-Za-z0-9._-]+', p):
+            names.append(p)
+    ru = [p for p in names if re.search('[А-Яа-яЁё]', p)]
+    return ((ru or names or [None])[0] or '')[:40] or None
+
+
+def collect_depts(hq):
+    """Отделы из карты отделов в правилах штаба, по порядку первого упоминания: соседняя папка, на которую правила
+    ссылаются как ../<папка> (так пишет corp-new: «Имя: ../corp-x»), или папка corp-* рядом, названная в правилах.
+    Имя отдела: заголовок его AGENTS.md; нет — имя из строки карты «Имя: ../папка»; нет и его — только папка."""
+    text = _rules_text(hq)
+    found = {}
+    for rx in (_LINK, _CORP):
+        for m in rx.finditer(text):
+            name = m.group(1).rstrip('.-')
+            if not name or name.startswith('.') or name == hq.name or name in found:
+                continue
+            if (hq.parent / name).is_dir():
+                found[name] = m.start()
+    out = []
+    for name in sorted(found, key=found.get):
+        label = None
+        m = re.search(r'^[ \t>]*(?:[-*+]|\d+\.)?[ \t]*(?:\*\*)?([^:|`\[\]\n*]{1,40}?)(?:\*\*)?[ \t]*:[ \t]*`?\.\./%s\b' % re.escape(name), text, re.M)
+        if m and m.group(1).strip():
+            label = m.group(1).strip()
+        out.append({'folder': name[:40], 'title': _dept_title(hq.parent / name) or label})
+    return out
 
 
 def cmd_inventory(a):
