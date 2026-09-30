@@ -280,7 +280,7 @@ def main() -> int:
             "term_canon", "term_distortions", "credits_used", "checks_first_failed", "fix_rounds", "checks_ok",
             "judge_verdicts", "error"]
     with (args.out / "results.csv").open("w", newline="", encoding="utf-8") as fh:
-        w = csv.DictWriter(fh, fieldnames=cols, extrasaction="ignore")
+        w = csv.DictWriter(fh, fieldnames=cols, extrasaction="ignore", lineterminator="\n")
         w.writeheader()
         for row in asr_rows + llm_rows:
             flat = dict(row)
