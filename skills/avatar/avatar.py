@@ -311,7 +311,7 @@ def collect_inventory(hq):
 
 # ───────── отделы: карта отделов в правилах штаба ─────────
 
-DEPTS_MAX = 40
+DEPTS_MAX = 64
 _RULES = ('AGENTS.md', 'CLAUDE.md', 'projects.md')   # projects.md: карта отделов бывает вынесена туда
 _LINK = re.compile(r'\.\./([A-Za-z0-9_.-]+)')
 _CORP = re.compile(r'(?<![\w./-])(corp-[A-Za-z0-9_-]+)')
