@@ -9,7 +9,7 @@
   python3 pc3live.py end                                                        маячок гаснет
   python3 pc3live.py say "короткая фраза"                                       робот «говорит», до 80 знаков
   python3 pc3live.py status                                                     связь, сколько в классе
-  python3 pc3live.py inventory --files "CLAUDE.md,me.md" --skills "hq,avatar" --mcp "pc3" --depts "corp-media"
+  python3 pc3live.py inventory --files "CLAUDE.md,me.md" --skills "hq,avatar" --mcp "pc3" --depts "corp-demo"
   python3 pc3live.py inventory --json '{"files": ["CLAUDE.md"], "skills": ["hq"]}'   или --json - (JSON из stdin)
                                                                                 парта: только имена, без путей
   join принимает те же --files/--skills/--mcp/--depts/--json: парта приходит вместе с роботом.

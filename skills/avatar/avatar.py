@@ -25,7 +25,9 @@ pc-avatar), ключ харнес/семейство модели. Робот н
 """
 import argparse
 import json
+import os
 import re
+import subprocess
 import sys
 import webbrowser
 from datetime import date
@@ -207,7 +209,8 @@ def cmd_go(a):
     rec = {'company': company, 'head': head, 'tape': tape, 'made': old.get('made') or date.today().isoformat()}
     changed = rec != old
     data[key] = rec
-    save_avatars(hq, data)
+    if changed:
+        save_avatars(hq, data)
     print(record_line(key, rec))
     print('%s: %s' % ('Записано' if changed else 'Без изменений', hq / 'stack' / 'avatars.json'))
     print('Код: ' + code)
@@ -239,13 +242,75 @@ def write_preview(hq, code):
     page.parent.mkdir(parents=True, exist_ok=True)
     page.write_text(html.replace(MARK, '<script>window.ROBOT = %s;</script>' % json.dumps({'code': code}), 1), encoding='utf-8')
     inv = collect_inventory(hq)
-    depts = collect_depts(hq)
-    data = {'hq': hq.name[:40], 'inventory': {k: inv[k] for k in ('files', 'skills', 'mcp')},
+    depts = [{**d, **collect_office(hq.parent / d['folder'])} for d in collect_depts(hq)]
+    data = {'hq': hq.name[:40], 'folder': hq.name[:40], 'title': 'штаб', **collect_office(hq),
+            'inventory': {k: inv[k] for k in ('files', 'skills', 'mcp')},
             'depts': depts[:DEPTS_MAX], 'total': len(depts)}
     (page.parent / 'robot-data.js').write_text(
-        '/* Штаб для страницы робота: только имена, без путей и содержимого. Пишет avatar.py go, руками не править. */\n'
+        '/* Локальная страница: имена, относительные пути .env и состояние git; без содержимого и адресов репозиториев. */\n'
         'window.ROBOT_DATA = %s;\n' % json.dumps(data, ensure_ascii=True, indent=1), encoding='utf-8')
     return page, depts
+
+
+# Только локальная страница. collect_inventory и pc3live этих данных не получают.
+ENV_SKIP = {'node_modules', '.git', '.venv', 'venv', 'dist', 'build', '__pycache__', '.next', '.cache'}
+ENV_TEMPLATES = {'.env.example', '.env.sample', '.env.template', '.env.dist'}
+
+
+def _command(args, cwd, timeout=15, input=None):
+    try:
+        return subprocess.run(args, cwd=cwd, input=input, capture_output=True, text=True,
+                              timeout=timeout, check=False)
+    except (OSError, subprocess.TimeoutExpired):
+        return None
+
+
+def office_git(folder):
+    """Свой git отдела (включая worktree), GitHub по remote; адрес остаётся внутри функции."""
+    if not (folder / '.git').exists():
+        return 'none'
+    remotes = _command(['git', 'remote', '-v'], folder)
+    if remotes is None or remotes.returncode:
+        return 'local'
+    repo = None
+    for line in remotes.stdout.splitlines():
+        fields = line.split()
+        if len(fields) < 2:
+            continue
+        match = re.fullmatch(r'(?:https?://(?:[^/@]+@)?github\.com/|ssh://(?:[^/@]+@)?github\.com(?::\d+)?/|(?:[^/@:]+@)?github\.com:)([\w.-]+/[\w.-]+?)(?:\.git)?/?', fields[1], re.I)
+        if match:
+            repo = match.group(1)
+            break
+    if not repo:
+        return 'local'
+    result = _command(['gh', 'repo', 'view', repo, '--json', 'visibility'], folder)
+    if result is not None and result.returncode == 0:
+        try:
+            visibility = json.loads(result.stdout).get('visibility', '').lower()
+            if visibility in ('private', 'public'):
+                return visibility
+        except (ValueError, AttributeError):
+            pass
+    return 'github'
+
+
+def collect_office(folder):
+    """Все настоящие .env*: только относительные имена; содержимое никогда не читается."""
+    names = []
+    for root, dirs, files in os.walk(folder, followlinks=False):
+        dirs[:] = sorted(d for d in dirs if d not in ENV_SKIP and not (Path(root) / d).is_symlink())
+        for name in files:
+            if name.startswith('.env') and name not in ENV_TEMPLATES:
+                path = Path(root) / name
+                if path.is_file() and not path.is_symlink():
+                    names.append(path.relative_to(folder).as_posix())
+    names.sort()
+    ignored = set()
+    if names and (folder / '.git').exists():
+        result = _command(['git', 'check-ignore', '-z', '--stdin'], folder, input='\0'.join(names) + '\0')
+        if result is not None and result.returncode in (0, 1):
+            ignored = set(result.stdout.rstrip('\0').split('\0'))
+    return {'env': [{'name': name, 'ignored': name in ignored} for name in names], 'git': office_git(folder)}
 
 
 def ignore_avatar(hq):
