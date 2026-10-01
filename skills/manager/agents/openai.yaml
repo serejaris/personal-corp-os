@@ -1,7 +1,7 @@
 interface:
   display_name: "Manager"
-  short_description: "Синк задач штаба: файл задачи или issue на GitHub"
-  default_prompt: "Используй $manager, чтобы записать итоги сессии в задачи штаба."
+  short_description: "Записывает итоги сессии в задачи штаба и показывает статус"
+  default_prompt: "Используй $manager и запиши итоги этой сессии в задачи штаба."
 
 policy:
   allow_implicit_invocation: false

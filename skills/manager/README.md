@@ -51,12 +51,12 @@ The skill closes all four gaps: pre-flight read of your priorities index, cross-
 
 ## Installation
 
-Install the skill into your HQ — the folder that holds the HQ rules file:
+Install the skill into your HQ, the folder that holds the HQ rules file. There is one copy of the skill, and both tools see it:
 
-- `<hq>/.agents/skills/manager` — the real skill folder; Codex reads it;
-- `<hq>/.claude/skills` — a symbolic link to `../.agents/skills`; Claude Code sees the same skill through it.
+- `<hq>/.agents/skills/manager`: the skill folder itself, Codex reads it;
+- `<hq>/.claude/skills`: a symbolic link to `../.agents/skills`, Claude Code sees the same skill through it.
 
-There is one copy of the skill, and both tools read it.
+A symbolic link works like a shortcut: the folder lives in one place and opens from two.
 
 The easiest way is to hand the install to your agent, as in the lesson. Give it a link to the `skills/manager` folder in this repository and ask:
 
@@ -64,13 +64,13 @@ The easiest way is to hand the install to your agent, as in the lesson. Give it 
 
 How to check:
 
-- `<hq>/.agents/skills/manager/SKILL.md` exists;
-- `<hq>/.claude/skills` is a link, not a regular folder: `ls -l .claude` shows `skills -> ../.agents/skills`;
-- `.claude/skills/manager/SKILL.md` opens through the link.
+- the file `<hq>/.agents/skills/manager/SKILL.md` is in place;
+- `<hq>/.claude/skills` is a link, not a regular folder: `ls -l .claude` in the HQ folder shows `skills -> ../.agents/skills`;
+- the file `.claude/skills/manager/SKILL.md` opens through the link.
 
-The skill never turns itself on: in Claude Code you call it with `/manager` (`disable-model-invocation: true` in `SKILL.md`), in Codex by mentioning `$manager` (`allow_implicit_invocation: false` in `agents/openai.yaml`).
+The agent never starts the skill on its own. In Claude Code you call it with `/manager`: the line `disable-model-invocation: true` in `SKILL.md` sets this. In Codex you call it by writing `$manager` in your message: the line `allow_implicit_invocation: false` in `agents/openai.yaml` sets this.
 
-For a plugin install, follow the root README of this repository.
+To install the skill as a plugin, follow the root README of this repository.
 
 ## Setup
 
