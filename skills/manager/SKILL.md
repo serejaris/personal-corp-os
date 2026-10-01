@@ -11,7 +11,6 @@ description: >-
   issue“, „статус задачи“, „что по …“, „есть ли issue по …“, „sync session“,
   „track status“, „what about …“. Не применять: план дня — daily, ретро —
   retro.
-disable-model-invocation: true
 ---
 
 # Manager — двусторонний мост между сессией и задачами

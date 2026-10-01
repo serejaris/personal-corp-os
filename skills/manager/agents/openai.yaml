@@ -4,4 +4,4 @@ interface:
   default_prompt: "Используй $manager и запиши итоги этой сессии в задачи штаба."
 
 policy:
-  allow_implicit_invocation: false
+  allow_implicit_invocation: true

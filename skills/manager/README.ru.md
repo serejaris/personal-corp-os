@@ -68,7 +68,12 @@ Manager — это issue-мост в операционном цикле. `weekl
 - на месте `<штаб>/.claude/skills` стоит ссылка, а не обычная папка: команда `ls -l .claude` в папке штаба показывает `skills -> ../.agents/skills`;
 - файл `.claude/skills/manager/SKILL.md` открывается через ссылку.
 
-Агент не запускает скилл сам. В Claude Code его вызывают командой `/manager`: так задано строкой `disable-model-invocation: true` в `SKILL.md`. В Codex его вызывают, когда пишут `$manager` в сообщении: так задано строкой `allow_implicit_invocation: false` в `agents/openai.yaml`.
+По умолчанию агент может запустить скилл сам, когда видит подходящую задачу. Вызвать его вручную тоже можно: в Claude Code командой `/manager`, в Codex словом `$manager` в сообщении.
+
+**Как запретить самостоятельный вызов**
+
+- Claude Code: добавь во frontmatter `SKILL.md` (блок между строками `---` в начале файла) строку `disable-model-invocation: true`. После этого скилл запускается только командой `/manager`.
+- Codex: в файле `agents/openai.yaml` поставь `allow_implicit_invocation: false`. После этого скилл запускается только когда ты пишешь `$manager` в сообщении.
 
 Чтобы поставить скилл плагином, следуй инструкции в корневом README этого репозитория.
 

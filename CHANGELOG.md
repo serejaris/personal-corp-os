@@ -16,7 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - **parallel-design-variants** became **make-landing**, merging reference-anchored variants with the frozen-concept workflow and bundled author role.
-- **manager** follows the official skill guidelines: SKILL.md shrinks from 940 to under 200 lines (the "where tasks live" fork, level 1, config, invariants), the GitHub modes move to one-level `references/*.md` with tables of contents, the body is in Russian, the description follows the "what it does, when yes, when no" formula, `agents/openai.yaml` disables implicit invocation in Codex, and the skill READMEs describe installing into the HQ via `.agents/skills` with a `.claude/skills` symlink.
+- **manager** follows the official skill guidelines: SKILL.md shrinks from 940 to under 200 lines (the "where tasks live" fork, level 1, config, invariants), the GitHub modes move to one-level `references/*.md` with tables of contents, the body is in Russian, the description follows the "what it does, when yes, when no" formula, the agent may invoke the skill on its own in both Claude Code and Codex (`agents/openai.yaml` sets `allow_implicit_invocation: true`; the README explains how to switch it off), and the skill READMEs describe installing into the HQ via `.agents/skills` with a `.claude/skills` symlink.
 
 ## [5.1.0] - 2026-09-29
 
