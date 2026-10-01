@@ -68,12 +68,12 @@ How to check:
 - `<hq>/.claude/skills` is a link, not a regular folder: `ls -l .claude` in the HQ folder shows `skills -> ../.agents/skills`;
 - the file `.claude/skills/manager/SKILL.md` opens through the link.
 
-By default the agent may start the skill on its own when it sees a matching task. You can also call it by hand: `/manager` in Claude Code, `$manager` in your message in Codex.
+By default the agent may start the skill on its own when it sees a matching task. To start it by hand: type `/manager` in Claude Code, or write `$manager` in your message in Codex.
 
-**How to forbid automatic invocation**
+**How to stop the agent from starting the skill on its own**
 
-- Claude Code: add the line `disable-model-invocation: true` to the frontmatter of `SKILL.md` (the block between the `---` lines at the top of the file). After that the skill runs only through the `/manager` command.
-- Codex: set `allow_implicit_invocation: false` in `agents/openai.yaml`. After that the skill runs only when you write `$manager` in your message.
+- Claude Code: open `SKILL.md` in the skill folder and add the line `disable-model-invocation: true` to its frontmatter (the block between the `---` lines at the top of the file). Now the skill runs only through the `/manager` command.
+- Codex: set `allow_implicit_invocation: false` in `agents/openai.yaml` in the skill folder. Now the skill runs only when you write `$manager` in your message.
 
 To install the skill as a plugin, follow the root README of this repository.
 
