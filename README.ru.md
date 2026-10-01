@@ -159,7 +159,7 @@ graph LR
 | Скилл | Звено маршрута | Что делает |
 |-------|----------------|------------|
 | [corp-doctor](./skills/corp-doctor/) | Контур, отдел, задача | Диагностика и ремонт контура, новый отдел, маршрут задачи в нужный отдел |
-| [manager](./skills/manager/) | Исполнение | Синк работы сессии в GitHub Issues и cross-repo запросы по задачам |
+| [manager](./skills/manager/) | Исполнение | Записывает итоги сессии в файл задачи или issue на GitHub и отвечает «что по задаче» |
 | [weekly-retro](./skills/weekly-retro/) | Паттерн в память | Факты, scorecard, Area Interviews и цели Областей следующей недели |
 | [weekly-planning](./skills/weekly-planning/) | Приоритет | Outcomes, живая семидневная доска, Area Explorer, часы и привычки Wealth |
 
@@ -229,7 +229,7 @@ Use Personal Corp skills to plan my week.
 | Скилл | Что делает |
 |---|---|
 | [corp-doctor](./skills/corp-doctor/) | Один вход в контур: диагностика, ремонт, новый отдел, маршрут задачи |
-| [manager](./skills/manager/) | Двусторонний мост между сессией и GitHub Issues, срез по трекам |
+| [manager](./skills/manager/) | Ведёт задачи штаба: по итогам сессии обновляет файл задачи или issue на GitHub, отвечает «что по задаче» |
 | [weekly-retro](./skills/weekly-retro/) | Недельное ретро: факты, scorecard, Area Interviews и предложенные цели Областей |
 | [weekly-planning](./skills/weekly-planning/) | Приоритизированные outcomes и живая полная неделя, которую обновляет daily отдела |
 | [daily](./skills/daily/) | Дневной фокус штаба: открытые задачи всех отделов в файле дня `tasks/ГГГГ-ММ-ДД.md` |
