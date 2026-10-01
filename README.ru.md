@@ -229,7 +229,7 @@ Use Personal Corp skills to plan my week.
 | Скилл | Что делает |
 |---|---|
 | [corp-doctor](./skills/corp-doctor/) | Один вход в контур: диагностика, ремонт, новый отдел, маршрут задачи |
-| [manager](./skills/manager/) | Ведёт задачи штаба: по итогам сессии обновляет файл задачи или issue на GitHub, отвечает «что по задаче» |
+| [manager](./skills/manager/) | Задачи штаба: записывает итоги сессии в файл задачи или issue на GitHub, отвечает «что по задаче» |
 | [weekly-retro](./skills/weekly-retro/) | Недельное ретро: факты, scorecard, Area Interviews и предложенные цели Областей |
 | [weekly-planning](./skills/weekly-planning/) | Приоритизированные outcomes и живая полная неделя, которую обновляет daily отдела |
 | [daily](./skills/daily/) | Дневной фокус штаба: открытые задачи всех отделов в файле дня `tasks/ГГГГ-ММ-ДД.md` |

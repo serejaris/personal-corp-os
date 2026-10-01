@@ -227,7 +227,7 @@ Replace `cc-analytics` with any skill name from the table below.
 | Skill | What it does |
 |---|---|
 | [corp-doctor](./skills/corp-doctor/) | One entry point to the loop: diagnose, repair, new department, task routing |
-| [manager](./skills/manager/) | Keeps HQ tasks: after a session updates the task file or GitHub issue, answers "what about this task" |
+| [manager](./skills/manager/) | HQ tasks: writes session results to the task file or GitHub issue, answers "what about this task" |
 | [weekly-retro](./skills/weekly-retro/) | Weekly retro: facts, scorecard, Area Interviews, and proposed Area goals |
 | [weekly-planning](./skills/weekly-planning/) | Prioritized outcomes plus a living full-week view refreshed by department daily |
 | [daily](./skills/daily/) | HQ daily focus: open tasks from all departments in a day file `tasks/YYYY-MM-DD.md` |
