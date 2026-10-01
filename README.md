@@ -281,7 +281,7 @@ Replace `cc-analytics` with any skill name from the table below.
 | Skill | What it does |
 |---|---|
 | [readme-generator](./skills/readme-generator/) | Human-focused README files with proper structure |
-| [claude-md-writer](./skills/claude-md-writer/) | Create and refactor the agent rules file following best practices |
+| [agents-md-writer](./skills/agents-md-writer/) | Write and trim `AGENTS.md`: one rules file for every harness, three line kinds, 32 KB chain budget |
 
 ### Operations
 

@@ -283,7 +283,7 @@ Use Personal Corp skills to plan my week.
 | Скилл | Что делает |
 |---|---|
 | [readme-generator](./skills/readme-generator/) | README для людей: структура, назначение, порядок действий |
-| [claude-md-writer](./skills/claude-md-writer/) | Сборка и рефакторинг файла правил агента по проверенным практикам |
+| [agents-md-writer](./skills/agents-md-writer/) | Пишет и чистит `AGENTS.md`: один файл правил для всех харнесов, три вида строк, бюджет цепочки 32 КБ |
 
 ### Операции
 
