@@ -51,12 +51,26 @@ The skill closes all four gaps: pre-flight read of your priorities index, cross-
 
 ## Installation
 
-```bash
-cp -r skills/manager ~/.claude/skills/
-cp -r skills/manager ~/.codex/skills/
-```
+Install the skill into your HQ — the folder that holds the HQ rules file:
 
-Use the path for your agent runtime. For plugin installs, use the repository plugin instructions; the same `SKILL.md` is shared by Claude Code and Codex.
+- `<hq>/.agents/skills/manager` — the real skill folder; Codex reads it;
+- `<hq>/.claude/skills` — a symbolic link to `../.agents/skills`; Claude Code sees the same skill through it.
+
+There is one copy of the skill, and both tools read it.
+
+The easiest way is to hand the install to your agent, as in the lesson. Give it a link to the `skills/manager` folder in this repository and ask:
+
+> Install it into the HQ, in .agents/skills, so that both Claude Code and Codex see it, via a symbolic link. Don't copy the files.
+
+How to check:
+
+- `<hq>/.agents/skills/manager/SKILL.md` exists;
+- `<hq>/.claude/skills` is a link, not a regular folder: `ls -l .claude` shows `skills -> ../.agents/skills`;
+- `.claude/skills/manager/SKILL.md` opens through the link.
+
+The skill never turns itself on: in Claude Code you call it with `/manager` (`disable-model-invocation: true` in `SKILL.md`), in Codex by mentioning `$manager` (`allow_implicit_invocation: false` in `agents/openai.yaml`).
+
+For a plugin install, follow the root README of this repository.
 
 ## Setup
 
@@ -74,7 +88,7 @@ Add a `## Manager Config` section to your project's `AGENTS.md` (preferred) or `
 | Standing write authorization | `ask-each-time` (default) or `execute-after-plan` |
 | CRM integration (optional) | Path to your CRM and pointer format used in issue bodies |
 
-Full config template — in `SKILL.md`, `## Setup` section.
+Full config template — in `SKILL.md`, section «Настройка: Manager Config».
 
 Without config the skill still works, but less targeted: it'll ask for owner / repos on first run.
 
@@ -133,7 +147,7 @@ The skill enforces invariants for every issue it touches — the base three alwa
 
 ## See also
 
-- [SKILL.md](SKILL.md) — full specification: write/read mode algorithms, parent epic rules, W-label rules, title convention, output templates
+- [SKILL.md](SKILL.md) — the "where tasks live" fork, level 1 (tasks in files), config and invariants; level 2 details live in [references/](references/): write/read mode algorithms, parent epic rules, W-label rules, title convention, output templates
 - [README.ru.md](README.ru.md) — Russian version
 - `corp-doctor` — creates or repairs the manager config
 - `weekly-planning` — curates the week index and day plans

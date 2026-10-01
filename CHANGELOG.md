@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [5.2.0] - 2026-10-01
+
 ### Added
 - **make-3d** skill — builds 3D variants in isolated scene copies, presents matching image sheets for human selection, and transfers the chosen model to the canon; bilingual READMEs.
 - **make-landing** skill — reference-led 2D design variants with full concepts frozen before code, independent authors, browser checks, a gallery, human selection and a second round mixing winners; bilingual READMEs.
@@ -14,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - **parallel-design-variants** became **make-landing**, merging reference-anchored variants with the frozen-concept workflow and bundled author role.
+- **manager** follows the official skill guidelines: SKILL.md shrinks from 940 to under 200 lines (the "where tasks live" fork, level 1, config, invariants), the GitHub modes move to one-level `references/*.md` with tables of contents, the body is in Russian, the description follows the "what it does, when yes, when no" formula, `agents/openai.yaml` disables implicit invocation in Codex, and the skill READMEs describe installing into the HQ via `.agents/skills` with a `.claude/skills` symlink.
 
 ## [5.1.0] - 2026-09-29
 

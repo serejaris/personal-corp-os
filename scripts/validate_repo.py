@@ -249,7 +249,14 @@ def validate_public_hygiene() -> None:
 
 def validate_manager_distribution() -> None:
     manager = ROOT / "skills" / "manager"
-    allowed = {"SKILL.md", "README.md", "README.ru.md", "assets/illustration.png"}
+    allowed = {
+        "SKILL.md", "README.md", "README.ru.md", "assets/illustration.png",
+        "agents/openai.yaml",
+        "references/crm.md", "references/mistakes.md", "references/modes.md",
+        "references/output.md", "references/parent-epic.md", "references/read-mode.md",
+        "references/search.md", "references/templates.md", "references/titles.md",
+        "references/w-labels.md", "references/write-mode.md",
+    }
     for path in manager.rglob("*"):
         if not path.is_file():
             continue

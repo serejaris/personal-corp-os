@@ -51,12 +51,26 @@ Manager — это issue-мост в операционном цикле. `weekl
 
 ## Установка
 
-```bash
-cp -r skills/manager ~/.claude/skills/
-cp -r skills/manager ~/.codex/skills/
-```
+Скилл ставится в штаб — папку, где лежит файл правил штаба:
 
-Используй путь своего agent runtime. Для plugin-install используется общий plugin repo; один и тот же `SKILL.md` работает в Claude Code и Codex.
+- `<штаб>/.agents/skills/manager` — настоящая папка скилла, её читает Codex;
+- `<штаб>/.claude/skills` — символическая ссылка на `../.agents/skills`, через неё тот же скилл видит Claude Code.
+
+Копия скилла одна, обе программы читают её.
+
+Установку проще поручить агенту, как на уроке. Дай ему ссылку на папку `skills/manager` в этом репозитории и попроси:
+
+> Установи его в штаб, в .agents/skills, чтобы его видели и Claude Code, и Codex, через символическую ссылку. Не копируй файлы.
+
+Как проверить:
+
+- `<штаб>/.agents/skills/manager/SKILL.md` существует;
+- `<штаб>/.claude/skills` — ссылка, а не обычная папка: `ls -l .claude` показывает `skills -> ../.agents/skills`;
+- `.claude/skills/manager/SKILL.md` открывается через ссылку.
+
+Сам по себе скилл не включается: в Claude Code его вызывают командой `/manager` (`disable-model-invocation: true` в `SKILL.md`), в Codex — упоминанием `$manager` (`allow_implicit_invocation: false` в `agents/openai.yaml`).
+
+Установка плагином — по инструкции в корневом README репозитория.
 
 ## Настройка
 
@@ -74,7 +88,7 @@ cp -r skills/manager ~/.codex/skills/
 | Standing write authorization | `ask-each-time` (по умолчанию) или `execute-after-plan` |
 | CRM integration (опц.) | Путь к CRM и формат указателя в body issue |
 
-Полный шаблон конфига — в `SKILL.md`, секция `## Setup`.
+Полный шаблон конфига — в `SKILL.md`, раздел «Настройка: Manager Config».
 
 Без конфига скилл тоже работает, но менее targeted: будет переспрашивать про owner / repos на первом запуске.
 
@@ -133,7 +147,7 @@ cp -r skills/manager ~/.codex/skills/
 
 ## См. также
 
-- [SKILL.md](SKILL.md) — полная спецификация: алгоритмы write/read mode, parent epic rules, W-label rules, title convention, output templates
+- [SKILL.md](SKILL.md) — развилка «где лежат задачи», уровень 1 (задачи в файлах), конфиг и инварианты; подробности уровня 2 — в [references/](references/): алгоритмы write/read mode, parent epic rules, W-label rules, title convention, output templates
 - [README.md](README.md) — English version
 - `corp-doctor` — создаёт или чинит manager config
 - `weekly-planning` — ведёт week index и day plans
