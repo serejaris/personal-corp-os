@@ -51,12 +51,31 @@ Manager — это issue-мост в операционном цикле. `weekl
 
 ## Установка
 
-```bash
-cp -r skills/manager ~/.claude/skills/
-cp -r skills/manager ~/.codex/skills/
-```
+Скилл ставится в штаб, то есть в папку, где лежит файл правил штаба. Копия скилла одна, а видят её обе программы:
 
-Используй путь своего agent runtime. Для plugin-install используется общий plugin repo; один и тот же `SKILL.md` работает в Claude Code и Codex.
+- `<штаб>/.agents/skills/manager`: сама папка скилла, её читает Codex;
+- `<штаб>/.claude/skills`: символическая ссылка на `../.agents/skills`, через неё тот же скилл видит Claude Code.
+
+Символическая ссылка работает как ярлык: папка лежит в одном месте, а открывается из двух.
+
+Проще всего поручить установку агенту, как на уроке. Дай ему ссылку на папку `skills/manager` в этом репозитории и попроси:
+
+> Установи его в штаб, в .agents/skills, чтобы его видели и Claude Code, и Codex, через символическую ссылку. Не копируй файлы.
+
+Как проверить:
+
+- файл `<штаб>/.agents/skills/manager/SKILL.md` на месте;
+- на месте `<штаб>/.claude/skills` стоит ссылка, а не обычная папка: команда `ls -l .claude` в папке штаба показывает `skills -> ../.agents/skills`;
+- файл `.claude/skills/manager/SKILL.md` открывается через ссылку.
+
+По умолчанию агент может запустить скилл сам, когда видит подходящую задачу. Запустить вручную: в Claude Code — командой `/manager`, в Codex — словом `$manager` в сообщении.
+
+**Как запретить агенту запускать скилл сам**
+
+- Claude Code: открой `SKILL.md` в папке скилла и добавь во frontmatter (блок между строками `---` в начале файла) строку `disable-model-invocation: true`. Теперь скилл запускается только командой `/manager`.
+- Codex: в файле `agents/openai.yaml` в папке скилла поставь `allow_implicit_invocation: false`. Теперь скилл запускается, только когда ты пишешь `$manager` в сообщении.
+
+Чтобы поставить скилл плагином, следуй инструкции в корневом README этого репозитория.
 
 ## Настройка
 
@@ -74,7 +93,7 @@ cp -r skills/manager ~/.codex/skills/
 | Standing write authorization | `ask-each-time` (по умолчанию) или `execute-after-plan` |
 | CRM integration (опц.) | Путь к CRM и формат указателя в body issue |
 
-Полный шаблон конфига — в `SKILL.md`, секция `## Setup`.
+Полный шаблон конфига — в `SKILL.md`, раздел «Настройка: Manager Config».
 
 Без конфига скилл тоже работает, но менее targeted: будет переспрашивать про owner / repos на первом запуске.
 
@@ -133,7 +152,7 @@ cp -r skills/manager ~/.codex/skills/
 
 ## См. также
 
-- [SKILL.md](SKILL.md) — полная спецификация: алгоритмы write/read mode, parent epic rules, W-label rules, title convention, output templates
+- [SKILL.md](SKILL.md) — развилка «где лежат задачи», уровень 1 (задачи в файлах), конфиг и инварианты; подробности уровня 2 — в [references/](references/): алгоритмы write/read mode, parent epic rules, W-label rules, title convention, output templates
 - [README.md](README.md) — English version
 - `corp-doctor` — создаёт или чинит manager config
 - `weekly-planning` — ведёт week index и day plans

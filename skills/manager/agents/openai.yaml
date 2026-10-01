@@ -1,0 +1,7 @@
+interface:
+  display_name: "Manager"
+  short_description: "Записывает итоги сессии в задачи штаба и показывает статус"
+  default_prompt: "Используй $manager и запиши итоги этой сессии в задачи штаба."
+
+policy:
+  allow_implicit_invocation: true

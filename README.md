@@ -157,7 +157,7 @@ After two such weeks the department has its own memory, and part of the decision
 | Skill | Link in the route | What it does |
 |-------|-------------------|--------------|
 | [corp-doctor](./skills/corp-doctor/) | Loop, department, task | Diagnose and repair the loop, add a department, route a task |
-| [manager](./skills/manager/) | Execution | Sync session work into GitHub Issues and query cross-repo task state |
+| [manager](./skills/manager/) | Execution | Sync session work into task files or GitHub issues and answer "what about this task" |
 | [weekly-retro](./skills/weekly-retro/) | Pattern into memory | Facts, outcome scorecard, Area Interviews, and next-week Area goals |
 | [weekly-planning](./skills/weekly-planning/) | Priority | Outcomes, seven-day living plan, Area Explorer, clocks, and Wealth habits |
 
@@ -227,7 +227,7 @@ Replace `cc-analytics` with any skill name from the table below.
 | Skill | What it does |
 |---|---|
 | [corp-doctor](./skills/corp-doctor/) | One entry point to the loop: diagnose, repair, new department, task routing |
-| [manager](./skills/manager/) | Two-way bridge between the session and GitHub Issues, cross-repo status |
+| [manager](./skills/manager/) | HQ tasks: writes session results to the task file or GitHub issue, answers "what about this task" |
 | [weekly-retro](./skills/weekly-retro/) | Weekly retro: facts, scorecard, Area Interviews, and proposed Area goals |
 | [weekly-planning](./skills/weekly-planning/) | Prioritized outcomes plus a living full-week view refreshed by department daily |
 | [daily](./skills/daily/) | HQ daily focus: open tasks from all departments in a day file `tasks/YYYY-MM-DD.md` |
