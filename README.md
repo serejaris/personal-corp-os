@@ -282,6 +282,7 @@ Replace `cc-analytics` with any skill name from the table below.
 |---|---|
 | [readme-generator](./skills/readme-generator/) | Human-focused README files with proper structure |
 | [claude-md-writer](./skills/claude-md-writer/) | Create and refactor the agent rules file following best practices |
+| [audit-agent-rules](./skills/audit-agent-rules/) | Audit AGENTS.md files and skill descriptions in a folder: report table, edits only after yes |
 
 ### Operations
 
