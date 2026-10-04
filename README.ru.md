@@ -284,6 +284,7 @@ Use Personal Corp skills to plan my week.
 |---|---|
 | [readme-generator](./skills/readme-generator/) | README для людей: структура, назначение, порядок действий |
 | [claude-md-writer](./skills/claude-md-writer/) | Сборка и рефакторинг файла правил агента по проверенным практикам |
+| [audit-agent-rules](./skills/audit-agent-rules/) | Аудит AGENTS.md и описаний скиллов в папке: таблица находок, правки только после «да» |
 
 ### Операции
 
