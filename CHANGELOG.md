@@ -8,7 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Changed
-- **corp-new** offers a ready research department template (`templates/corp-research/`): eight rules for sourced reports, an `INDEX.md` report catalog and an empty `tags.md` dictionary.
+- **corp-new** offers a ready research department template (`templates/corp-research/`): eight rules for sourced reports, an `INDEX.md` report catalog an empty `tags.md` dictionary and the department skill `corp-research`.
+- **corp-new** explains how to add a skill to a department, with rules files, skill folders and invocation per harness (Claude Code, Codex) and links per OS (macOS/Linux symlinks, Windows `@AGENTS.md` import and junction).
 
 ### Fixed
 - **corp-new** also looks for the HQ in `./hq`, so a run from the folder above the HQ finds it.
