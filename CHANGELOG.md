@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- **corp-new** offers a ready research department template (`templates/corp-research/`): eight rules for sourced reports, an `INDEX.md` report catalog and an empty `tags.md` dictionary.
+
+### Fixed
+- **corp-new** also looks for the HQ in `./hq`, so a run from the folder above the HQ finds it.
+- **corp-new** check "HQ links to the department" no longer fails when the HQ has no `projects.md`.
+
 ## [5.2.0] - 2026-10-01
 
 ### Added
