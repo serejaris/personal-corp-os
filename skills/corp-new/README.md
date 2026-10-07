@@ -21,6 +21,6 @@ Or ask: "create a department", "new department", "add a department for sales".
 - For a research department, offers a ready template: eight rules, an `INDEX.md` report catalog a `tags.md` tag dictionary and the department skill `corp-research`. Templates live in [`templates/`](templates/).
 - Explains how to add a skill to the department: paths and invocation for Claude Code and Codex, links for macOS, Linux and Windows.
 - Links the HQ and the department in each other's rules. Creates a private GitHub repository through `gh` only if you ask.
-- Reports a table of steps with ✓/✗ and what to fill in next: the department's purpose and its canon, which file is responsible for what. You fill them in yourself or with the agent through `/grill-me`.
+- Reports a table of steps with ✓/✗ and what to fill in next: the department's purpose and its canon, which file is responsible for what. You fill them in yourself or with the agent through `/mp-grill-me`.
 
 It does not write department rules for you, except for the ready templates, does not touch other files and does not discard uncommitted work. The skill text is in Russian.
