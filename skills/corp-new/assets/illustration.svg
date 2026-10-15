@@ -1,6 +1,6 @@
-<svg viewBox="0 0 960 696" width="960" height="696" role="img" aria-labelledby="t d" xmlns="http://www.w3.org/2000/svg">
+<svg viewBox="0 0 960 792" width="960" height="792" role="img" aria-labelledby="t d" xmlns="http://www.w3.org/2000/svg">
   <title id="t">Скилл corp-new: новый отдел штаба</title>
-  <desc id="d">Главное — связь в обе стороны: в карте отделов штаба строка «Продажи: ../corp-sales», первая строка AGENTS.md отдела — «Это отдел штаба ../hq». Шаги: 1 найти штаб (папка с me.md или stack/harness.md); 2 нет штаба — поставить из agent-starter; 3 имя corp-домен, папки и строки в карте ещё нет; 4 каркас отдела: AGENTS.md с пустыми местами, симлинки CLAUDE.md и .claude/skills, tasks/, git init; 5 приватный репозиторий на GitHub, только если попросили; 6 связь со штабом в правилах с обеих сторон; 7 отчёт таблицей ✓/✗ и что заполнить дальше.</desc>
+  <desc id="d">Главное — связь в обе стороны: в карте отделов штаба строка «Продажи: ../corp-sales», первая строка AGENTS.md отдела — «Это отдел штаба ../hq». Шаги: 1 найти штаб (папка с me.md или stack/harness.md); 2 нет штаба — поставить из agent-starter; 3 имя corp-домен, папки и строки в карте ещё нет; 4 каркас отдела: AGENTS.md и словарь CONTEXT.md с пустыми местами, симлинки CLAUDE.md и .claude/skills, tasks/, .gitignore без видео и секретов, git init; 5 приватный репозиторий на GitHub, только если попросили; 6 связь со штабом в правилах с обеих сторон; 7 отчёт таблицей ✓/✗ и что заполнить дальше.</desc>
   <defs>
     <marker id="ap" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><polygon points="0 0, 10 4, 0 8" fill="#e11d74"/></marker>
   </defs>
@@ -9,7 +9,7 @@
     .m{font-family:ui-monospace,Menlo,Monaco,Consolas,'Liberation Mono',monospace}
   </style>
 
-  <rect width="960" height="696" rx="14" fill="#f8fafc"/>
+  <rect width="960" height="792" rx="14" fill="#f8fafc"/>
 
   <!-- Главное -->
   <text x="24" y="52" class="s" fill="#0f172a" font-size="27" font-weight="700">Отдел знает свой штаб, штаб знает свои отделы</text>
@@ -30,7 +30,7 @@
   </g>
 
   <!-- Отдел -->
-  <rect x="536" y="80" width="400" height="304" rx="8" fill="#ffffff" stroke="#e11d74" stroke-width="1.2"/>
+  <rect x="536" y="80" width="400" height="400" rx="8" fill="#ffffff" stroke="#e11d74" stroke-width="1.2"/>
   <text x="552" y="118" class="m" fill="#0f172a" font-size="24" font-weight="700">corp-sales/</text>
   <text x="920" y="117" class="s" fill="#e11d74" font-size="18" font-weight="600" text-anchor="end">новый отдел</text>
   <g class="m" font-size="17" fill="#0f172a">
@@ -47,6 +47,12 @@
     <text x="564" y="306">.claude/skills → .agents/skills</text>
     <rect x="552" y="328" width="368" height="40" rx="5" fill="#f1f5f9"/>
     <text x="564" y="354">tasks/</text>
+    <rect x="552" y="376" width="368" height="40" rx="5" fill="#f1f5f9"/>
+    <text x="564" y="402">CONTEXT.md</text>
+    <text x="910" y="402" class="s" fill="#64748b" font-size="15" text-anchor="end">словарь отдела</text>
+    <rect x="552" y="424" width="368" height="40" rx="5" fill="#f1f5f9"/>
+    <text x="564" y="450">.gitignore</text>
+    <text x="910" y="450" class="s" fill="#64748b" font-size="15" text-anchor="end">без видео и секретов</text>
   </g>
 
   <!-- Связь -->
@@ -57,31 +63,31 @@
   <!-- Шаги (номера как в SKILL.md) -->
   <g class="s" font-size="20">
     <g fill="#94a3b8" font-weight="700" text-anchor="end">
-      <text x="44" y="440">1</text>
-      <text x="44" y="478">2</text>
-      <text x="44" y="516">3</text>
-      <text x="44" y="554">4</text>
-      <text x="44" y="592">5</text>
-      <text x="44" y="630" fill="#e11d74">6</text>
-      <text x="44" y="668">7</text>
+      <text x="44" y="536">1</text>
+      <text x="44" y="574">2</text>
+      <text x="44" y="612">3</text>
+      <text x="44" y="650">4</text>
+      <text x="44" y="688">5</text>
+      <text x="44" y="726" fill="#e11d74">6</text>
+      <text x="44" y="764">7</text>
     </g>
     <g fill="#0f172a" font-weight="700">
-      <text x="60" y="440">Найти штаб</text>
-      <text x="60" y="478">Нет штаба</text>
-      <text x="60" y="516">Имя corp-&lt;домен&gt;</text>
-      <text x="60" y="554">Каркас отдела</text>
-      <text x="60" y="592" fill="#64748b">GitHub</text>
-      <text x="60" y="630" fill="#e11d74">Связь со штабом</text>
-      <text x="60" y="668">Отчёт</text>
+      <text x="60" y="536">Найти штаб</text>
+      <text x="60" y="574">Нет штаба</text>
+      <text x="60" y="612">Имя corp-&lt;домен&gt;</text>
+      <text x="60" y="650">Каркас отдела</text>
+      <text x="60" y="688" fill="#64748b">GitHub</text>
+      <text x="60" y="726" fill="#e11d74">Связь со штабом</text>
+      <text x="60" y="764">Отчёт</text>
     </g>
     <g fill="#475569" font-size="19">
-      <text x="306" y="440">папка с <tspan class="m">me.md</tspan> или <tspan class="m">stack/harness.md</tspan></text>
-      <text x="306" y="478">поставить из agent-starter</text>
-      <text x="306" y="516">папки и строки в карте отделов ещё нет</text>
-      <text x="306" y="554"><tspan class="m">AGENTS.md</tspan> с пустыми местами, <tspan class="m">git init</tspan></text>
-      <text x="306" y="592" fill="#64748b">приватный репозиторий, только если попросили</text>
-      <text x="306" y="630" fill="#e11d74">строка в правилах с обеих сторон ↑</text>
-      <text x="306" y="668">таблица ✓/✗ и что заполнить дальше</text>
+      <text x="306" y="536">папка с <tspan class="m">me.md</tspan> или <tspan class="m">stack/harness.md</tspan></text>
+      <text x="306" y="574">поставить из agent-starter</text>
+      <text x="306" y="612">папки и строки в карте отделов ещё нет</text>
+      <text x="306" y="650"><tspan class="m">AGENTS.md</tspan> и словарь с пустыми местами, <tspan class="m">.gitignore</tspan></text>
+      <text x="306" y="688" fill="#64748b">приватный репозиторий, только если попросили</text>
+      <text x="306" y="726" fill="#e11d74">строка в правилах с обеих сторон ↑</text>
+      <text x="306" y="764">таблица ✓/✗ и что заполнить дальше</text>
     </g>
   </g>
 </svg>

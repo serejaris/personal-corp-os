@@ -17,10 +17,11 @@ Or ask: "create a department", "new department", "add a department for sales".
 
 - Finds the HQ folder (the one with `me.md` or `stack/harness.md`). If there is no HQ, installs one from [agent-starter](https://github.com/serejaris/agent-starter) and runs its `hq` skill.
 - Picks a `corp-<domain>` name and checks that the folder and the entry in the department map do not already exist.
-- Sets up the skeleton: `AGENTS.md` with empty places for you to fill, a skills folder and a `tasks/` folder, `CLAUDE.md` and `.claude/skills` symlinks, `git init`.
+- Sets up the skeleton: `AGENTS.md` with empty places for you to fill, a department glossary `CONTEXT.md`, a skills folder and a `tasks/` folder, `CLAUDE.md` and `.claude/skills` symlinks, `git init`.
+- Adds a `.gitignore` that keeps secrets, video, audio, Zoom recordings and archives out of git. For an existing department it appends the missing lines.
 - For a research department, offers a ready template: eight rules, an `INDEX.md` report catalog a `tags.md` tag dictionary and the department skill `corp-research`. Templates live in [`templates/`](templates/).
 - Explains how to add a skill to the department: paths and invocation for Claude Code and Codex, links for macOS, Linux and Windows.
 - Links the HQ and the department in each other's rules. Creates a private GitHub repository through `gh` only if you ask.
-- Reports a table of steps with ✓/✗ and what to fill in next: the department's purpose and its canon, which file is responsible for what. You fill them in yourself or with the agent through `/mp-grill-me`.
+- Reports a table of steps with ✓/✗ and what to fill in next: the department's purpose, its canon (which file is responsible for what) and the first glossary terms. You fill them in yourself or with the agent through `/mp-grill-me`.
 
 It does not write department rules for you, except for the ready templates, does not touch other files and does not discard uncommitted work. The skill text is in Russian.
