@@ -16,6 +16,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **corp-new** also looks for the HQ in `./hq`, so a run from the folder above the HQ finds it.
 - **corp-new** check "HQ links to the department" no longer fails when the HQ has no `projects.md`.
 
+## [5.3.0] - 2026-10-15
+
+### Added
+- **claude-sessions-sync**: sync Claude Code session records between two Anthropic accounts in the desktop app on macOS — bidirectional newest-wins merge, archive-flags union, deleted markers, safe-quit procedure.
+
+### Fixed
+- **validate_repo** skips undecodable binary artifacts (e.g. local `.beads/backup/*.darc`), so the release checklist runs on a dirty working tree.
+
 ## [5.2.0] - 2026-10-01
 
 ### Added

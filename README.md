@@ -293,6 +293,7 @@ Replace `cc-analytics` with any skill name from the table below.
 | [benchmark](./skills/benchmark/) | Measure pipeline variants (ASR engine, notes model, judge) in an isolated container: time, cost per hour with dated prices, quality |
 | [safe-public-release](./skills/safe-public-release/) | Provenance, licensing, allowlist, and fresh-clone checks before publishing |
 | [tg-bot-ops](./skills/tg-bot-ops/) | Operations playbook for Telegram bots and agent gateways |
+| [claude-sessions-sync](./skills/claude-sessions-sync/) | Sync Claude Code session records between two Anthropic accounts in the desktop app (macOS) when you switch for usage limits |
 
 ## Other
 

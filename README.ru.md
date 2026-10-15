@@ -295,6 +295,7 @@ Use Personal Corp skills to plan my week.
 | [benchmark](./skills/benchmark/) | Замер вариантов пайплайна (движок распознавания, модель конспекта, судья) в изолированном контейнере: время, цена часа с датой цен, качество |
 | [safe-public-release](./skills/safe-public-release/) | Провенанс, лицензии, allowlist и проверка на чистом клоне перед публикацией |
 | [tg-bot-ops](./skills/tg-bot-ops/) | Операционный плейбук для Telegram-ботов и шлюзов к агентам |
+| [claude-sessions-sync](./skills/claude-sessions-sync/) | Синхронизация записей сессий Claude Code между двумя аккаунтами Anthropic в desktop-приложении (macOS) при переключении из-за лимитов |
 
 ## Other
 

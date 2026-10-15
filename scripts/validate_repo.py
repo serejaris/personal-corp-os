@@ -240,9 +240,12 @@ def validate_public_hygiene() -> None:
     for path in ROOT.rglob("*"):
         if ".git" in path.parts or not path.is_file():
             continue
-        if path.suffix in {".png", ".jpg", ".jpeg", ".gif", ".webp", ".pdf"}:
+        if path.suffix in {".png", ".jpg", ".jpeg", ".gif", ".webp", ".pdf", ".darc"}:
             continue
-        text = read(path)
+        try:
+            text = read(path)
+        except UnicodeDecodeError:
+            continue  # local binary artifacts (e.g. beads backups)
         if LEGACY_NAME in text:
             fail(f"{path.relative_to(ROOT)} still contains legacy repo name {LEGACY_NAME}")
 
