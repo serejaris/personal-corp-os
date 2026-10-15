@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- **corp-new** offers a ready research department template (`templates/corp-research/`): eight rules for sourced reports, an `INDEX.md` report catalog an empty `tags.md` dictionary and the department skill `corp-research`.
+- **corp-new** adds two files to every department: a `.gitignore` that keeps secrets, video, audio, Zoom recordings and archives out of git (a large recording left out of `.gitignore` made an agent retry a failing commit until temp files filled the disk), and a department glossary `CONTEXT.md` the agent reads before work and extends as terms are agreed. Existing departments get the missing files and `.gitignore` lines.
+- **corp-new** explains how to add a skill to a department, with rules files, skill folders and invocation per harness (Claude Code, Codex) and links per OS (macOS/Linux symlinks, Windows `@AGENTS.md` import and junction).
+
+### Fixed
+- **corp-new** also looks for the HQ in `./hq`, so a run from the folder above the HQ finds it.
+- **corp-new** check "HQ links to the department" no longer fails when the HQ has no `projects.md`.
+
 ## [5.3.0] - 2026-10-15
 
 ### Added

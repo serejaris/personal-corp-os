@@ -1,0 +1,31 @@
+# Секреты: ключи, токены и пароли в git не попадают
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Тяжёлые файлы: записи Zoom, видео, аудио и архивы лежат в папке отдела, в git не идут
+*.mp4
+*.mov
+*.mkv
+*.webm
+*.avi
+*.m4a
+*.mp3
+*.wav
+*.zip
+*.rar
+*.7z
+*.dmg
+*.iso
+
+# Временное и служебное
+tmp/
+*.tmp
+*.log
+node_modules/
+__pycache__/
+.DS_Store
+Thumbs.db
+desktop.ini
