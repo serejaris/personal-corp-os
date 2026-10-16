@@ -248,20 +248,6 @@ Use Personal Corp skills to plan my week.
 | [to-issues](./skills/to-issues/) | Разбивка PRD на вертикальные срезы `tasks/NN-slug.md` с критериями |
 | [gh-issues](./skills/gh-issues/) | Работа с GitHub Issues через CLI с хранением контекста сессии |
 
-### Продуктовая работа
-
-| Скилл | Что делает |
-|---|---|
-| [pm-brainstorm](./skills/pm-brainstorm/) | Структурированная генерация идей с SCAMPER и отбором по усилию |
-| [pm-feedback](./skills/pm-feedback/) | Классификация обратной связи, кластеризация тем, ранжирование болей |
-| [pm-competitive](./skills/pm-competitive/) | Конкурентный анализ: SWOT, матрица функций, дифференциация |
-| [pm-prioritize](./skills/pm-prioritize/) | Ранжирование бэклога через RICE, ICE, MoSCoW или Kano |
-| [pm-prd](./skills/pm-prd/) | Структурированный PRD с шаблонами под тип продукта |
-| [pm-user-stories](./skills/pm-user-stories/) | Разбивка эпика на user stories по INVEST со story map |
-| [pm-metrics](./skills/pm-metrics/) | Обзор продуктовых метрик, воронка, удержание, сверка с целями |
-| [pm-roadmap](./skills/pm-roadmap/) | Обновление дорожной карты Now/Next/Later с причинами задержек |
-| [product-data-audit](./skills/product-data-audit/) | Глубокий аудит продукта и бизнеса, интерактивный отчёт на 12 секций |
-
 ### Дизайн и медиа
 
 | Скилл | Что делает |

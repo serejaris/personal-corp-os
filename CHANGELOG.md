@@ -16,6 +16,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **corp-new** also looks for the HQ in `./hq`, so a run from the folder above the HQ finds it.
 - **corp-new** check "HQ links to the department" no longer fails when the HQ has no `projects.md`.
 
+## [6.0.0] - 2026-10-15
+
+### Removed
+- Product-management skills: `pm-brainstorm`, `pm-feedback`, `pm-competitive`, `pm-prioritize`, `pm-prd`, `pm-user-stories`, `pm-metrics`, `pm-roadmap`, `product-data-audit`.
+
 ## [5.3.0] - 2026-10-15
 
 ### Added

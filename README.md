@@ -246,20 +246,6 @@ Replace `cc-analytics` with any skill name from the table below.
 | [to-issues](./skills/to-issues/) | Split a PRD into vertical `tasks/NN-slug.md` slices with acceptance criteria |
 | [gh-issues](./skills/gh-issues/) | Manage GitHub Issues through the CLI with session context |
 
-### Product work
-
-| Skill | What it does |
-|---|---|
-| [pm-brainstorm](./skills/pm-brainstorm/) | Structured ideation with SCAMPER and impact/effort screening |
-| [pm-feedback](./skills/pm-feedback/) | Classify feedback, cluster themes, rank actionable pains |
-| [pm-competitive](./skills/pm-competitive/) | Competitor analysis with SWOT, feature matrix, differentiation |
-| [pm-prioritize](./skills/pm-prioritize/) | Rank the backlog with RICE, ICE, MoSCoW, or Kano |
-| [pm-prd](./skills/pm-prd/) | Structured PRD generation with product-type templates |
-| [pm-user-stories](./skills/pm-user-stories/) | Break an epic into INVEST user stories with a story map |
-| [pm-metrics](./skills/pm-metrics/) | Product metrics review: funnel, retention, alignment with goals |
-| [pm-roadmap](./skills/pm-roadmap/) | Update the Now/Next/Later roadmap with delay attribution |
-| [product-data-audit](./skills/product-data-audit/) | Deep product and business audit as a 12-section interactive report |
-
 ### Design and media
 
 | Skill | What it does |
