@@ -282,7 +282,7 @@ Use Personal Corp skills to plan my week.
 | [safe-public-release](./skills/safe-public-release/) | Провенанс, лицензии, allowlist и проверка на чистом клоне перед публикацией |
 | [tg-bot-ops](./skills/tg-bot-ops/) | Операционный плейбук для Telegram-ботов и шлюзов к агентам |
 | [claude-sessions-sync](./skills/claude-sessions-sync/) | Синхронизация записей сессий Claude Code между двумя аккаунтами Anthropic в desktop-приложении (macOS) при переключении из-за лимитов |
-| [it-memory](./skills/it-memory/) | Поиск и убийство хвостов процессов, которые держат память: простаивающие сессии Claude Code, хвосты закрытых приложений, сироты; своп и давление до и после |
+| [it-ram-doctor](./skills/it-ram-doctor/) | Поиск и убийство хвостов процессов, которые держат память: простаивающие сессии Claude Code, хвосты закрытых приложений, сироты; своп и давление до и после |
 
 ## Other
 

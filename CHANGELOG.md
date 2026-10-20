@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **memory-cleanup**: find and kill process tails that hold memory on macOS and Linux — idle Claude Code desktop sessions, closed-app leftovers, orphaned workers, zombies. Read-only snapshot scripts, kill only on the owner's word with a TERM → KILL pass, swap and pressure before and after.
 
 ### Changed
-- **memory-cleanup** renamed to **it-memory** (`skills/it-memory/`): same skill, new name to sit with the IT-department skills; the unreleased `memory-cleanup` entry above refers to this skill.
+- **memory-cleanup** renamed to **it-ram-doctor** (`skills/it-ram-doctor/`): same skill, new name to sit with the IT-department skills; the unreleased `memory-cleanup` entry above refers to this skill.
 - **corp-new** offers a ready research department template (`templates/corp-research/`): eight rules for sourced reports, an `INDEX.md` report catalog an empty `tags.md` dictionary and the department skill `corp-research`.
 - **corp-new** adds two files to every department: a `.gitignore` that keeps secrets, video, audio, Zoom recordings and archives out of git (a large recording left out of `.gitignore` made an agent retry a failing commit until temp files filled the disk), and a department glossary `CONTEXT.md` the agent reads before work and extends as terms are agreed. Existing departments get the missing files and `.gitignore` lines.
 - **corp-new** explains how to add a skill to a department, with rules files, skill folders and invocation per harness (Claude Code, Codex) and links per OS (macOS/Linux symlinks, Windows `@AGENTS.md` import and junction).
@@ -42,7 +42,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **benchmark** skill — runs pipeline variants (ASR engines, the model that writes notes, the judge model) one by one in an isolated container; measures time, cost per hour of input in USD and RUB with price source and date, WER/CER and term accuracy for ASR, code checks and a judge of a different model for LLM steps; writes results.json/csv and a static analytics page; bilingual READMEs.
 
 ### Changed
-- **memory-cleanup** renamed to **it-memory** (`skills/it-memory/`): same skill, new name to sit with the IT-department skills; the unreleased `memory-cleanup` entry above refers to this skill.
 - **parallel-design-variants** became **make-landing**, merging reference-anchored variants with the frozen-concept workflow and bundled author role.
 - **manager** follows the official skill guidelines: SKILL.md shrinks from 940 to under 200 lines (the "where tasks live" fork, level 1, config, invariants), the GitHub modes move to one-level `references/*.md` with tables of contents, the body is in Russian, the description follows the "what it does, when yes, when no" formula, the agent may invoke the skill on its own in both Claude Code and Codex (`agents/openai.yaml` sets `allow_implicit_invocation: true`; the README explains how to switch it off), and the skill READMEs describe installing into the HQ via `.agents/skills` with a `.claude/skills` symlink.
 
@@ -53,7 +52,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **harness** skill — one header sets the agent's working mode for the session: role (executor, orchestrator, critic), subagent model, effort, subagent limit; bilingual READMEs.
 
 ### Changed
-- **memory-cleanup** renamed to **it-memory** (`skills/it-memory/`): same skill, new name to sit with the IT-department skills; the unreleased `memory-cleanup` entry above refers to this skill.
 - **manager** defaults to orchestrator + critic at low effort with up to 3 subagents when no `/harness` header is given.
 
 ## [5.0.1] - 2026-09-17
@@ -75,14 +73,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Public regression checks cover W34/W35/W53 transitions, seven-day rendering, and 14 browser-local habit controls.
 
 ### Changed
-- **memory-cleanup** renamed to **it-memory** (`skills/it-memory/`): same skill, new name to sit with the IT-department skills; the unreleased `memory-cleanup` entry above refers to this skill.
 - **weekly-retro** adds fact-first Area Interviews and an explicit `Area Goals` handoff to planning.
 - Bilingual docs describe the complete `retro → planning → daily` rhythm and point setup to `corp-doctor`.
 
 ## [4.0.0] - 2026-08-06
 
 ### Changed
-- **memory-cleanup** renamed to **it-memory** (`skills/it-memory/`): same skill, new name to sit with the IT-department skills; the unreleased `memory-cleanup` entry above refers to this skill.
 - **BREAKING** — `corp-init`, `corp-new` and `task-routing` merged into one skill, **corp-doctor**. It opens with a menu and waits for an explicit choice: diagnose, repair, new department, route a task, build from scratch. The founder never used a separate init step, and three skills for one loop meant guessing which one to call.
 - The skill catalogue in both READMEs is grouped instead of listed flat: system rhythm, from intent to tasks, product work, design and media, agent orchestration, docs and rules, operations.
 - Russian README rewritten against the editorial voice rules of the content department: em dashes cut from 18 to 2, guillemets replaced with straight quotes, antithesis constructions and negation-led openings removed.
@@ -93,7 +89,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [3.0.0] - 2026-08-06
 
 ### Changed
-- **memory-cleanup** renamed to **it-memory** (`skills/it-memory/`): same skill, new name to sit with the IT-department skills; the unreleased `memory-cleanup` entry above refers to this skill.
 - **BREAKING** — repository, plugin, and marketplace renamed from `personal-corp-skills` to `personal-corp-os`. GitHub redirects the old repository URLs, but the plugin identifier changed: remove the installed `personal-corp-skills` plugin and install `personal-corp-os@personal-corp-os`. Historical entries below keep the old name because that is what those releases shipped as.
 - README now opens with the framework instead of the install steps: the bottleneck problem, the route from a written task to department memory, the weekly rhythm, departments, a 30-minute first step, and a six-skill table that maps each skill to its link in the route. The flat catalogue moved below as **All skills** and is no longer nested under Telegram skills. Same structure in `README.ru.md`.
 - **project-init** renamed to **corp-init** and rewritten around the current Personal Corp operating model: HQ index + daily task files, `AGENTS.md` first, `manager` issue invariants, corp-* owner map, GitHub Projects, and repair/audit mode.
@@ -121,7 +116,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [2.1.0] - 2026-06-15
 
 ### Changed
-- **memory-cleanup** renamed to **it-memory** (`skills/it-memory/`): same skill, new name to sit with the IT-department skills; the unreleased `memory-cleanup` entry above refers to this skill.
 - **manager** skill — major update porting the evolved canonical issues-and-Projects workflow, kept generalized and config-driven:
   - Iron invariants expanded from 3 to 6 — added **Project placement**, **Project-visible parent** (visible root epic in the Project view with a non-empty status lane), and a mandatory **work-record comment** on real session work.
   - New **GitHub Projects integration** config block and a **Project status sync (write mode)** section (set touched issues to `In progress`, surface Project drift).
@@ -147,7 +141,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Skill README illustrations for every published skill, using deliberately clumsy MS Paint-style generated assets.
 
 ### Changed
-- **memory-cleanup** renamed to **it-memory** (`skills/it-memory/`): same skill, new name to sit with the IT-department skills; the unreleased `memory-cleanup` entry above refers to this skill.
 - **prioritize** renamed to **pm-prioritize** — folder, frontmatter, install paths, README tables; `/prioritize` kept as alias trigger
 - Moved `paperclip-api` from active skills to `archive/skills/paperclip-api`.
 - Renamed public skill identifiers `ris-manager` → `manager` and
@@ -241,7 +234,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Tested with 6 subagents, 2 REFACTOR rounds
 
 ### Changed
-- **memory-cleanup** renamed to **it-memory** (`skills/it-memory/`): same skill, new name to sit with the IT-department skills; the unreleased `memory-cleanup` entry above refers to this skill.
 - README restructured: skills as tables, removed Coming Soon sections, simplified installation
 
 ## [1.14.0] - 2026-03-27
@@ -302,7 +294,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.9.0] - 2026-02-02
 
 ### Changed
-- **memory-cleanup** renamed to **it-memory** (`skills/it-memory/`): same skill, new name to sit with the IT-department skills; the unreleased `memory-cleanup` entry above refers to this skill.
 - **statusline** rewritten with OAuth API rate limits
   - Shows 5-hour and weekly usage percentage (remaining)
   - Countdown timer to 5-hour limit reset
@@ -348,7 +339,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.5.1] - 2026-01-01
 
 ### Changed
-- **memory-cleanup** renamed to **it-memory** (`skills/it-memory/`): same skill, new name to sit with the IT-department skills; the unreleased `memory-cleanup` entry above refers to this skill.
 - **claude-md-writer** skill updated with 2026 best practices:
   - 3-Tier Documentation System
   - Updated size limits (CLAUDE.md < 200, rules < 500)
@@ -387,7 +377,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.2.1] - 2025-12-16
 
 ### Changed
-- **memory-cleanup** renamed to **it-memory** (`skills/it-memory/`): same skill, new name to sit with the IT-department skills; the unreleased `memory-cleanup` entry above refers to this skill.
 - Refactored api-digest skill into multiple files (progressive disclosure)
   - `SKILL.md` — instructions with file references
   - `fetch.sh` — isolated credentials script
@@ -404,7 +393,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.1.0] - 2025-12-16
 
 ### Changed
-- **memory-cleanup** renamed to **it-memory** (`skills/it-memory/`): same skill, new name to sit with the IT-department skills; the unreleased `memory-cleanup` entry above refers to this skill.
 - Improved context usage calculation in statusline
   - Now uses `current_usage` object for accurate tracking
   - Includes cache_creation and cache_read tokens

@@ -1,9 +1,9 @@
 ---
-name: it-memory
-description: Finds and, on the owner's word, kills process tails that hold a machine's memory for nothing — idle Claude Code desktop sessions, leftovers of closed apps, orphaned workers, zombies. Use on "memory", "swap", "laptop is slow", "zombie processes", "kill the tails", "clean up memory", and after closing heavy apps.
+name: it-ram-doctor
+description: Finds and, on the owner's word, kills process tails that hold a machine's memory for nothing — idle Claude Code desktop sessions, leftovers of closed apps, orphaned workers, zombies. Use on "memory", "swap", "laptop is slow", "zombie processes", "kill the tails", "clean up memory", "ram doctor", and after closing heavy apps.
 ---
 
-# it-memory
+# it-ram-doctor
 
 An active skill: it kills processes, so the snapshot and the kill are separate steps. The snapshot script only reads.
 
