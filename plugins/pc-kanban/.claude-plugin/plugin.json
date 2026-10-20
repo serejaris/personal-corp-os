@@ -1,0 +1,42 @@
+{
+  "name": "pc-kanban",
+  "version": "0.2.0",
+  "description": "Personal Corp kanban panel: a board of beads or department task files at session start and the /kanban command (Russian UI)",
+  "author": {
+    "name": "Sereja Ris",
+    "email": "ris@sereja.tech",
+    "url": "https://sereja.tech"
+  },
+  "homepage": "https://github.com/serejaris/personal-corp-os/tree/main/plugins/pc-kanban",
+  "repository": "https://github.com/serejaris/personal-corp-os",
+  "license": "MIT",
+  "keywords": ["personal-corp", "kanban", "beads", "tasks", "departments", "mod"],
+  "types": "./types/index.d.ts",
+  "userConfig": {
+    "source": {
+      "type": "string",
+      "title": "Источник задач",
+      "description": "auto — bd, если в папке сессии есть .beads, task-файлы, если есть tasks/; bd — граф bd; tasks — task-файлы отделов tasks/*.md",
+      "options": ["auto", "bd", "tasks"],
+      "default": "auto"
+    },
+    "root": {
+      "type": "string",
+      "title": "Папка с отделами",
+      "description": "Где лежат штаб и отделы; пусто — папка над папкой сессии, а если в папке сессии есть hq/ — она сама",
+      "default": ""
+    },
+    "bd": {
+      "type": "string",
+      "title": "Команда bd",
+      "description": "Путь к bd, если его нет в PATH",
+      "default": "bd"
+    },
+    "autoOpen": {
+      "type": "boolean",
+      "title": "Открывать при старте",
+      "description": "Показывать панель в начале каждой сессии",
+      "default": true
+    }
+  }
+}
