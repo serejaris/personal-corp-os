@@ -20,6 +20,7 @@ Or ask: "create a department", "new department", "add a department for sales".
 - Sets up the skeleton: `AGENTS.md` with empty places for you to fill, a department glossary `CONTEXT.md`, a skills folder and a `tasks/` folder, `CLAUDE.md` and `.claude/skills` symlinks, `git init`.
 - Adds a `.gitignore` that keeps secrets, video, audio, Zoom recordings and archives out of git. For an existing department it appends the missing lines.
 - For a research department, offers a ready template: eight rules, an `INDEX.md` report catalog a `tags.md` tag dictionary and the department skill `corp-research`. Templates live in [`templates/`](templates/).
+- For an IT department (machines, servers, network, access), offers the ready template `corp-it`: ten rules, a glossary, an engineer agent ("it configures, it explains"), a `devices/` inventory folder, and two skills: `device-inventory` (read-only snapshot scripts for macOS and Linux) and `machine-access` (record access to a machine in a skill once, without secrets). It starts with one machine, your laptop.
 - Explains how to add a skill to the department: paths and invocation for Claude Code and Codex, links for macOS, Linux and Windows.
 - Links the HQ and the department in each other's rules. Creates a private GitHub repository through `gh` only if you ask.
 - Reports a table of steps with ✓/✗ and what to fill in next: the department's purpose, its canon (which file is responsible for what) and the first glossary terms. You fill them in yourself or with the agent through `/mp-grill-me`.
