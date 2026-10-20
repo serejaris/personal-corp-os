@@ -27,6 +27,7 @@ Collection of Claude Code customizations: skills, statusline, hooks.
 | `archive/skills/` | Historical skills kept for reference; not active plugin skills |
 | `statusline/` | Custom statusline scripts |
 | `hooks/` | Pre/post command hooks |
+| `plugins/<mod>/` | Claude Code mods (function hooks): own `plugin.json` with version, `README.md`, `README.ru.md`, tests; listed in `.claude-plugin/marketplace.json` |
 
 ## Skill Structure
 
@@ -53,11 +54,12 @@ READMEs update only when skills list changes (add/remove).
 2. Update READMEs (only if skills list changed)
 3. Run `python3 scripts/validate_repo.py`
 4. Run `claude plugin validate .claude-plugin/marketplace.json`
-5. Run `claude plugin tag --dry-run --force .`
-6. Run a clean Codex install smoke:
+5. For each mod in `plugins/`: `claude plugin validate plugins/<mod>` and `claude plugin test plugins/<mod>`; a changed mod gets a new version in its `plugin.json` and its marketplace entry
+6. Run `claude plugin tag --dry-run --force .`
+7. Run a clean Codex install smoke:
    `tmp_home=$(mktemp -d); HOME="$tmp_home" codex plugin marketplace add .; HOME="$tmp_home" codex plugin add personal-corp-os@personal-corp-os; rm -rf "$tmp_home"`
-7. Run `git diff --check`
-8. Commit: `docs: update changelog for vX.Y.Z`
-9. Tag: `git tag -a vX.Y.Z -m "Release vX.Y.Z"`
-10. Push: `git push && git push --tags`
-11. GitHub release via `gh release create`
+8. Run `git diff --check`
+9. Commit: `docs: update changelog for vX.Y.Z`
+10. Tag: `git tag -a vX.Y.Z -m "Release vX.Y.Z"`
+11. Push: `git push && git push --tags`
+12. GitHub release via `gh release create`

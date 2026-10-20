@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **pc-kanban** plugin 0.2.0, a Claude Code mod in the same marketplace: at session start a panel with tasks by status and the neighbouring departments with progress bars below; a card click puts the task into the prompt, `/kanban` opens the panel again. Two task sources chosen by the `source` option (`auto`, `bd`, `tasks`): beads (`bd`) or department task files `tasks/*.md` with a `Статус:` line, the format of the Personal Corp lessons and the department template. In an HQ without tasks of its own the board gathers the tasks of all departments. Install: `claude plugin install pc-kanban@personal-corp-os`.
 - **memory-cleanup**: find and kill process tails that hold memory on macOS and Linux — idle Claude Code desktop sessions, closed-app leftovers, orphaned workers, zombies. Read-only snapshot scripts, kill only on the owner's word with a TERM → KILL pass, swap and pressure before and after.
 
 ### Changed

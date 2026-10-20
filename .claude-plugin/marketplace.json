@@ -15,6 +15,16 @@
         "name": "Sereja Ris"
       },
       "category": "productivity"
+    },
+    {
+      "name": "pc-kanban",
+      "source": "./plugins/pc-kanban",
+      "description": "Personal Corp kanban panel for Claude Code: at session start a board of beads (bd) or department task files (tasks/*.md) by status, below it the projects of neighbouring departments with progress bars; a card click puts the task into the prompt; /kanban opens the panel again. Russian UI.",
+      "version": "0.2.0",
+      "author": {
+        "name": "Sereja Ris"
+      },
+      "category": "productivity"
     }
   ]
 }

@@ -214,6 +214,34 @@ def validate_plugin_metadata() -> None:
             fail(".claude-plugin/marketplace.json plugin category must be productivity")
 
 
+def validate_claude_mods() -> None:
+    """Claude Code mods: marketplace entries after the root plugin, each in plugins/<name>."""
+    marketplace = validate_json(ROOT / ".claude-plugin" / "marketplace.json")
+    for entry in marketplace.get("plugins", [])[1:]:
+        name = entry.get("name")
+        folder = ROOT / "plugins" / str(name)
+        if entry.get("source") != f"./plugins/{name}":
+            fail(f".claude-plugin/marketplace.json {name} source must be ./plugins/{name}")
+        for rel in (".claude-plugin/plugin.json", "hooks/hooks.json", "README.md", "README.ru.md"):
+            if not (folder / rel).exists():
+                fail(f"plugins/{name} is missing {rel}")
+        if not any(folder.glob("tests/*.test.ts*")):
+            fail(f"plugins/{name} must ship tests for claude plugin test")
+        manifest = validate_json(folder / ".claude-plugin" / "plugin.json")
+        if manifest.get("name") != name:
+            fail(f"plugins/{name}/.claude-plugin/plugin.json name must be {name}")
+        if manifest.get("version") != entry.get("version"):
+            fail(f"plugins/{name} version must match its .claude-plugin/marketplace.json entry")
+        if entry.get("category") != "productivity":
+            fail(f".claude-plugin/marketplace.json {name} category must be productivity")
+        for filename in ("README.md", "README.ru.md"):
+            text = read(ROOT / filename)
+            if f"./plugins/{name}/" not in text:
+                fail(f"{filename} does not link to plugins/{name}/")
+            if f"claude plugin install {name}@personal-corp-os" not in text:
+                fail(f"{filename} must include install snippet: claude plugin install {name}@personal-corp-os")
+
+
 def validate_public_hygiene() -> None:
     required = [
         "LICENSE",
@@ -282,6 +310,7 @@ def main() -> None:
     validate_archived_skills(skill_names)
     validate_readme_skill_links(skill_names)
     validate_plugin_metadata()
+    validate_claude_mods()
     validate_public_hygiene()
     validate_manager_distribution()
     print(f"OK: validated {len(skill_names)} skills and public repo metadata")
