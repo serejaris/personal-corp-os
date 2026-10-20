@@ -191,6 +191,12 @@ Claude Code Desktop or interactive `/plugin` flow:
 2. Add marketplace: `serejaris/personal-corp-os`.
 3. Install `personal-corp-os`.
 
+Kanban panel for Claude Code, a separate plugin in the same marketplace (see [pc-kanban](./plugins/pc-kanban/)):
+
+```bash
+claude plugin install pc-kanban@personal-corp-os
+```
+
 ### Codex
 
 This repo includes a Codex plugin manifest at [.codex-plugin/plugin.json](.codex-plugin/plugin.json).
@@ -286,6 +292,9 @@ Replace `cc-analytics` with any skill name from the table below.
 
 ### [Statusline](./statusline/)
 Custom statusline showing costs, context usage, and git branch with color-coded indicators.
+
+### [pc-kanban](./plugins/pc-kanban/)
+Claude Code mod: at session start a panel with tasks by status, from beads (`bd`) or from department task files `tasks/*.md`, and neighbouring departments with progress bars below; a card click puts the task into the prompt, `/kanban` opens the panel again. Install: `claude plugin install pc-kanban@personal-corp-os`.
 
 ## Archived Skills
 

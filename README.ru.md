@@ -193,6 +193,12 @@ claude plugin details personal-corp-os
 2. Добавьте marketplace: `serejaris/personal-corp-os`.
 3. Установите `personal-corp-os`.
 
+Панель канбана для Claude Code — отдельный плагин в том же маркетплейсе (подробно в [pc-kanban](./plugins/pc-kanban/README.ru.md)):
+
+```bash
+claude plugin install pc-kanban@personal-corp-os
+```
+
 ### Codex
 
 В репозитории есть Codex manifest: [.codex-plugin/plugin.json](.codex-plugin/plugin.json).
@@ -288,6 +294,9 @@ Use Personal Corp skills to plan my week.
 
 ### [Statusline](./statusline/)
 Кастомный статусбар с отображением затрат, использования контекста и git-ветки с цветовой индикацией.
+
+### [pc-kanban](./plugins/pc-kanban/)
+Мод Claude Code: при старте сессии панель с задачами по статусам — из бидов (`bd`) или task-файлов отделов `tasks/*.md`, под доской соседние отделы с полосой прогресса; клик по карточке кладёт задачу в поле ввода, `/kanban` открывает панель снова. Установка: `claude plugin install pc-kanban@personal-corp-os`.
 
 ## Архивные скиллы
 
