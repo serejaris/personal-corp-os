@@ -1,4 +1,4 @@
-# memory-cleanup
+# it-memory
 
 Находит и убивает хвосты процессов, которые держат память впустую: простаивающие сессии Claude Code в десктопе, хвосты закрытых приложений, сироты-воркеры, зомби. macOS и Linux.
 
@@ -16,5 +16,5 @@
 ## Установка (один скилл)
 
 ```
-https://github.com/serejaris/personal-corp-os/tree/main/skills/memory-cleanup
+https://github.com/serejaris/personal-corp-os/tree/main/skills/it-memory
 ```

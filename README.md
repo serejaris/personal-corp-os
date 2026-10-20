@@ -280,7 +280,7 @@ Replace `cc-analytics` with any skill name from the table below.
 | [safe-public-release](./skills/safe-public-release/) | Provenance, licensing, allowlist, and fresh-clone checks before publishing |
 | [tg-bot-ops](./skills/tg-bot-ops/) | Operations playbook for Telegram bots and agent gateways |
 | [claude-sessions-sync](./skills/claude-sessions-sync/) | Sync Claude Code session records between two Anthropic accounts in the desktop app (macOS) when you switch for usage limits |
-| [memory-cleanup](./skills/memory-cleanup/) | Find and kill process tails holding memory: idle Claude Code sessions, closed-app leftovers, orphans; swap and pressure before and after |
+| [it-memory](./skills/it-memory/) | Find and kill process tails holding memory: idle Claude Code sessions, closed-app leftovers, orphans; swap and pressure before and after |
 
 ## Other
 

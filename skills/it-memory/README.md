@@ -1,4 +1,4 @@
-# memory-cleanup
+# it-memory
 
 Find and kill process tails that hold memory for nothing: idle Claude Code desktop sessions, leftovers of closed apps, orphaned workers, zombies. macOS and Linux.
 
@@ -18,5 +18,5 @@ The script output is in Russian.
 ## Install (single skill)
 
 ```
-https://github.com/serejaris/personal-corp-os/tree/main/skills/memory-cleanup
+https://github.com/serejaris/personal-corp-os/tree/main/skills/it-memory
 ```
