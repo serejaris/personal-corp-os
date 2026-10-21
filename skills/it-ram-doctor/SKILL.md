@@ -1,23 +1,22 @@
 ---
 name: it-ram-doctor
-description: Finds and, on the owner's word, kills process tails that hold a machine's memory for nothing — idle Claude Code desktop sessions, leftovers of closed apps, orphaned workers, zombies. Use on "memory", "swap", "laptop is slow", "zombie processes", "kill the tails", "clean up memory", "ram doctor", and after closing heavy apps.
+description: >-
+  Process tails that hold memory for nothing: finds them and, on the owner's word, kills them. Use on "slow", "swap", "low memory", "kill the tails", "clean up memory", "ram doctor", and after closing heavy apps.
 ---
 
 # it-ram-doctor
 
-An active skill: it kills processes, so the snapshot and the kill are separate steps. The snapshot script only reads.
+The snapshot only reads; step 4 kills, and only on the owner's word.
 
-Typical picture on a 16 GB Mac: a few gigabytes held by Claude Code desktop sessions idle for days (30–400 MB each, dozens of them), a daemon of a closed app still running its workers, duplicate worker brokers, a Chrome for Testing left by puppeteer. A background `npm run dev` started inside a session dies together with that session.
+## When memory is short
 
-## When memory is really short
+"13 of 16 GB used" and the swap size do not show load: macOS keeps memory busy with cache and compression, and swap does not shrink until a reboot. Memory is short when any of these holds:
 
-"13 of 16 GB used" and the Swap Used size mean nothing by themselves: macOS keeps memory busy with cache and compression, and swap does not shrink after memory is freed until a reboot. Shortage shows by three signs:
-
-- pressure is yellow or red: `sysctl kern.memorystatus_vm_pressure_level` above 1, `memory_pressure` shows less than 25–30% free;
-- `Swapouts` in `vm_stat` grow before your eyes (two readings a minute apart);
+- pressure: `sysctl kern.memorystatus_vm_pressure_level` is 4 or stays at 2 for long ([threshold](https://github.com/anthropics/claude-code/issues/73834): on Apple silicon 2 appears under ordinary compression); `memory_pressure | tail -1` shows less than 25–30% free;
+- `Swapouts` in `vm_stat` grow between two readings a minute apart;
 - swap grows three readings in a row.
 
-Measure a process by `top -o mem` or `footprint`: `ps` (RSS) does not see the compressed part and understates it. Look at the top of `top -o mem` before cleaning: one live job (a local whisper transcription, a model load) can hold more than all the tails together, and the script does not list children of active sessions.
+No signs: clean only on a direct request. Measure a process by `top -o mem` or `footprint`; `ps` understates the compressed part.
 
 ## Procedure
 
@@ -28,37 +27,39 @@ Measure a process by `top -o mem` or `footprint`: `ps` (RSS) does not see the co
    ssh -o BatchMode=yes -o ConnectTimeout=8 <alias> 'bash -s' < scripts/tails-<os>.sh   # remote
    ```
 
-   The script reads only, never calls sudo, kills nothing. It prints a table of candidates and a summary: total RSS, swap, memory pressure. Keep the summary: it is the "before" for step 5. It skips launchd gui-domain services (on Linux, processes in `.service` units), system processes, Claude.app, the current shell and its ancestors; the current claude session is named on a separate line. It prints no process environment, only session ids. Output is in Russian; the class labels are:
+   Keep the script's summary as the "before" and take the top of `top -o mem`: the table omits launchd services (on Linux, `.service` units), system processes, Claude.app and children of active sessions, and one live job (a local whisper run, 9 GB) can outweigh all the tails. Done when you hold the table, the summary and the top of `top`.
 
-   | Class | What it is |
-   |---|---|
-   | `claude-сессия` (claude session) | a Claude Code CLI process: bundled with Desktop (including the version/hash path) or standalone; session id when present, folder, child processes and dev servers with ports |
-   | `хвост закрытого приложения` (closed-app tail) | a process from `/Applications/X.app` with PPID 1 while the main binary `X` is not running, and everything under it |
-   | `сирота` (orphan) | a worker with PPID 1: omp/bun, Chrome for Testing / puppeteer, npx/MCP servers, grok/codex without a parent; duplicates are marked |
-   | `dev-сервер` (dev server) | `http.server`, vite, `npm run dev` without a parent, older than a day |
-   | `зомби` (zombie) | STAT Z older than a minute, with a parent: holds no memory, its parent reaps it |
+2. **Decide.** The "Action" column sets what to do with a class (the script prints the Russian labels shown):
 
-2. **Decide on claude sessions.** The script does not know activity. In the Claude desktop app call `list_sessions` and match by id: a session is a tail if its `lastActivityAt` is older than 12 h, it is not the current one, not `isRunning`, and no work is going on in it. Leave the other claude sessions alone.
+   | Class | What it is | Action |
+   |---|---|---|
+   | `claude-сессия` (claude session) | Claude Code CLI, bundled with Desktop or standalone | kill if a tail |
+   | `хвост закрытого приложения` (closed-app tail) | processes of `X.app` with PPID 1 while `X` is not running, and everything under them | kill |
+   | `сирота` (orphan) | a worker with PPID 1: omp/bun, Chrome for Testing, npx/MCP, grok/codex; duplicates marked | kill |
+   | `dev-сервер` (dev server) | `http.server`, vite, `npm run dev` without a parent, older than a day | ask |
+   | `зомби` (zombie) | STAT Z older than a minute | its parent reaps it: name the parent |
 
-3. **Show or kill.**
-   - On the owner's "kill", "clean up" — without another question: claude-session tails from step 2, closed-app tails, orphans.
-   - Dev servers and anything unclear — show as a table and ask.
-   - Never: the current session, active and running sessions, launchd services, Claude.app.
-   - Before killing a claude process, name its child dev servers and ports from the "dies with it" column: they die with it.
-   - Zombies are not killed: if one lingers, name its parent to the owner.
+   The script does not know session activity: match the id from the row against `list_sessions`. A tail is a session with `lastActivityAt` older than 12 h, not `isRunning`, with no work going on. Id "не найдена" (not found) and sessions on a remote machine (`list_sessions` does not know them): ask. Done when every row has an action and every claude row has a verdict: tail, live or ask.
 
-4. **Kill** — in bash with an array, with a check and a follow-up KILL:
+3. **Show.** The table to the owner: row, action, what dies with it. Before killing a claude process, name its dev servers and ports from the "dies with it" column. "Kill" and "clean up" go straight to step 4; "slow" and "swap" wait for the word. Done when the owner sees the table and the word is received or not needed.
+
+4. **Kill.** Only rows that passed step 2, in bash with an array, with a check and a follow-up KILL:
 
    ```bash
+   # bash -c: in zsh `kill $pids` with a string silently kills nothing
    bash -c 'pids=(111 222 333); kill -TERM "${pids[@]}"; sleep 4
      for p in "${pids[@]}"; do kill -0 "$p" 2>/dev/null && kill -KILL "$p"; done'
    ```
 
-   Pitfalls:
-   - in zsh `kill $pids` with a string does not split words, kill gets one string and silently kills nothing;
-   - idle claude sessions often ignore SIGTERM, so the KILL pass is not optional;
-   - a dev server started with `&` inside a session can outlive the killed session as an orphan: check its port with `lsof -iTCP:<port> -sTCP:LISTEN` after the kill.
+   - Idle claude sessions ignore SIGTERM: the KILL pass is required.
+   - A dev server started with `&` inside a session outlives it as an orphan: check the port with `lsof -iTCP:<port> -sTCP:LISTEN`.
 
-5. **Verify.** Run the script again: no killed candidates left. Report swap and memory pressure before and after to the owner.
+   Done when no pid from the array answers `kill -0` and the ports of killed dev servers are free.
 
-A killed claude session stays in the app's list: its process comes back on the next message in it. Ending the CLI does not free the memory of the Desktop renderer/utility processes. Restarting the whole app is fine after checking it does not interrupt needed work; confirm the effect with another reading.
+5. **Verify.** Run the script again. Report to the owner: pressure and the candidates' RSS before and after; swap does not shrink until a reboot, so it is not the measure. A killed claude session stays in the app's list and comes back on the next message. Killing the CLI does not free the memory of Desktop's renderer and main processes: that needs an app restart, on the owner's word, after checking it will not interrupt needed work, with another reading. Done when the run shows no killed candidates and "before" and "after" are named.
+
+## Off limits
+
+- the current session, active and `isRunning` claude sessions;
+- launchd services;
+- Claude.app.
