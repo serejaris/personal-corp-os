@@ -14,7 +14,7 @@ One skill, two modes:
 - **Write mode (sync)** — at end of session: reads what was done, finds matching issues, updates bodies / adds labels, creates new ones only when nothing matches.
 - **Read mode (query)** — anytime: «what about track X?», «is there an issue for Y?» → cross-repo search, condensed table of matches with labels, status, last activity.
 
-GitHub Issues become your single source of truth for tasks; a GitHub Project board is the source of truth for what's active. The skill enforces a set of invariants per issue (parent epic via Sub-issues API, W-label, Project placement, work-record comment on real work) and a predictable no-prefix title formula.
+GitHub Issues become your single source of truth for tasks; a GitHub Project board shows what's active and follows the issues. The skill enforces a set of invariants per issue (parent epic via Sub-issues API, W-label, Project placement, work-record comment on real work) and a predictable no-prefix title formula.
 
 Manager is the issue bridge in the operating cycle. `weekly-retro` reviews the past week, `weekly-planning` curates the week/day plans, and `manager` keeps GitHub issues, Projects, labels, parents, comments, and touched plan rows consistent during actual work.
 
