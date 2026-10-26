@@ -6,8 +6,6 @@ The HQ daily focus. Reads open tasks from every department and writes a day file
 /daily
 ```
 
-Runs only by command: the agent does not call the skill on its own.
-
 - Finds where each department keeps its tasks from the HQ rules file (`CLAUDE.md` or `AGENTS.md`); if the rules do not say, it stops and suggests one line per department.
 - Reads local `tasks/*.md` files or an external source such as GitHub Issues, and skips accepted, finished, and dropped tasks.
 - Puts each open task into one section: waiting for your decision, overdue or blocked, in progress, other open.
