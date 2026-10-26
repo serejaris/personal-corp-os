@@ -67,8 +67,6 @@ git diff --check
 skills/
   skill-name/
     SKILL.md        # Required: main skill file
-    README.md       # Required: English documentation
-    README.ru.md    # Required: Russian documentation
     *.sh, *.md      # Optional: supporting files
 ```
 
@@ -98,8 +96,6 @@ What goes wrong + fixes.
 ### Checklist
 
 - [ ] SKILL.md with proper frontmatter
-- [ ] README.md (English)
-- [ ] README.ru.md (Russian)
 - [ ] Added to main README.md skills list
 - [ ] Entry in CHANGELOG.md under `[Unreleased]`
 - [ ] `python3 scripts/validate_repo.py` passes
