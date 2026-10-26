@@ -21,6 +21,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **corp-new** also looks for the HQ in `./hq`, so a run from the folder above the HQ finds it.
 - **corp-new** check "HQ links to the department" no longer fails when the HQ has no `projects.md`.
 
+### Removed
+- Skill folders no longer ship `README.md` / `README.ru.md`: the agent reads only `SKILL.md`, and the skill list with descriptions lives in the main README. `scripts/validate_repo.py`, CONTRIBUTING and the PR template no longer require them.
+
 ## [6.0.0] - 2026-10-15
 
 ### Removed

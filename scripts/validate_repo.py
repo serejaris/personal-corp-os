@@ -74,10 +74,8 @@ def validate_skills() -> list[str]:
 
     for name in skill_names:
         skill_dir = skills_dir / name
-        for filename in ("SKILL.md", "README.md", "README.ru.md"):
-            path = skill_dir / filename
-            if not path.exists():
-                fail(f"{skill_dir.relative_to(ROOT)} is missing {filename}")
+        if not (skill_dir / "SKILL.md").exists():
+            fail(f"{skill_dir.relative_to(ROOT)} is missing SKILL.md")
 
         skill_path = skill_dir / "SKILL.md"
         block = frontmatter(read(skill_path), skill_path)
@@ -253,7 +251,7 @@ def validate_public_hygiene() -> None:
 def validate_manager_distribution() -> None:
     manager = ROOT / "skills" / "manager"
     allowed = {
-        "SKILL.md", "README.md", "README.ru.md", "assets/illustration.png",
+        "SKILL.md", "assets/illustration.png",
         "agents/openai.yaml",
         "references/crm.md", "references/mistakes.md", "references/modes.md",
         "references/output.md", "references/parent-epic.md", "references/read-mode.md",

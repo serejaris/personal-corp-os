@@ -15,11 +15,9 @@ Brief description of changes.
 - [ ] Follows commit conventions
 - [ ] Updated CHANGELOG.md under `[Unreleased]`
 - [ ] Documentation updated (if applicable)
-- [ ] README.md and README.ru.md updated (for skills)
+- [ ] Main README skills list updated (for skills)
 
 ## For Skills
 
 - [ ] SKILL.md with proper frontmatter
-- [ ] README.md (English)
-- [ ] README.ru.md (Russian)
 - [ ] Added to main README skills list
