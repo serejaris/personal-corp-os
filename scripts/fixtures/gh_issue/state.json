@@ -1,0 +1,252 @@
+{
+  "repos": {
+    "your-github-handle/app": {
+      "id": "R_app",
+      "default_branch": "main",
+      "labels": {
+        "W44": "LA_w44"
+      },
+      "files": {}
+    }
+  },
+  "issues": {
+    "your-github-handle/app#10": {
+      "id": "I_10",
+      "number": 10,
+      "title": "Project setup",
+      "state": "CLOSED",
+      "url": "https://github.com/your-github-handle/app/issues/10",
+      "body": "",
+      "labels": [
+        "W44"
+      ],
+      "assignees": [
+        "me"
+      ],
+      "parent": "your-github-handle/app#11",
+      "project_items": [
+        {
+          "id": "ITEM_Done",
+          "project": {
+            "number": 1
+          },
+          "status": {
+            "name": "Done"
+          }
+        }
+      ],
+      "comments": []
+    },
+    "your-github-handle/app#11": {
+      "id": "I_11",
+      "number": 11,
+      "title": "Sign-in and onboarding",
+      "state": "OPEN",
+      "url": "https://github.com/your-github-handle/app/issues/11",
+      "body": "Цель: человек входит и получает письмо.\n\n## Сейчас\n\nВедём вход и письма.\n",
+      "labels": [
+        "W44"
+      ],
+      "assignees": [
+        "me"
+      ],
+      "parent": null,
+      "project_items": [
+        {
+          "id": "ITEM_In_progress",
+          "project": {
+            "number": 1
+          },
+          "status": {
+            "name": "In progress"
+          }
+        }
+      ],
+      "comments": [],
+      "sub_issues": [
+        "your-github-handle/app#10",
+        "your-github-handle/app#12",
+        "your-github-handle/app#13",
+        "your-github-handle/app#14",
+        "your-github-handle/app#15"
+      ]
+    },
+    "your-github-handle/app#12": {
+      "id": "I_12",
+      "number": 12,
+      "title": "Add sign-in page",
+      "state": "OPEN",
+      "url": "https://github.com/your-github-handle/app/issues/12",
+      "body": "## Сейчас\n\nГде: `feat/sign-in`\nЖдёт: владелец: проверить вход на превью\n",
+      "labels": [
+        "W44"
+      ],
+      "assignees": [
+        "me"
+      ],
+      "parent": "your-github-handle/app#11",
+      "project_items": [
+        {
+          "id": "ITEM_In_review",
+          "project": {
+            "number": 1
+          },
+          "status": {
+            "name": "In review"
+          }
+        }
+      ],
+      "comments": [
+        {
+          "author": {
+            "login": "me"
+          },
+          "createdAt": "2026-10-28T12:00:00Z",
+          "url": "https://github.com/your-github-handle/app/issues/12#issuecomment-1",
+          "body": "Страница входа готова, превью собрано.\n\n![sign-in](https://github.com/your-github-handle/app/blob/0123456789abcdef0123456789abcdef01234567/docs/shots/2026-10-28-12-sign-in.png?raw=true)"
+        }
+      ]
+    },
+    "your-github-handle/app#13": {
+      "id": "I_13",
+      "number": 13,
+      "title": "Send welcome email",
+      "state": "OPEN",
+      "url": "https://github.com/your-github-handle/app/issues/13",
+      "body": "## Сейчас\n\nГде: `feat/welcome-email`\nЖдёт: ключ почтового сервиса\n",
+      "labels": [
+        "W44"
+      ],
+      "assignees": [
+        "me"
+      ],
+      "parent": "your-github-handle/app#11",
+      "project_items": [
+        {
+          "id": "ITEM_In_progress",
+          "project": {
+            "number": 1
+          },
+          "status": {
+            "name": "In progress"
+          }
+        }
+      ],
+      "comments": []
+    },
+    "your-github-handle/app#14": {
+      "id": "I_14",
+      "number": 14,
+      "title": "Billing settings",
+      "state": "OPEN",
+      "url": "https://github.com/your-github-handle/app/issues/14",
+      "body": "## Сейчас\n\nЖдёт: решение по тарифам\n",
+      "labels": [
+        "W44"
+      ],
+      "assignees": [
+        "me"
+      ],
+      "parent": "your-github-handle/app#11",
+      "project_items": [
+        {
+          "id": "ITEM_Backlog",
+          "project": {
+            "number": 1
+          },
+          "status": {
+            "name": "Backlog"
+          }
+        }
+      ],
+      "comments": []
+    },
+    "your-github-handle/app#15": {
+      "id": "I_15",
+      "number": 15,
+      "title": "Landing page",
+      "state": "OPEN",
+      "url": "https://github.com/your-github-handle/app/issues/15",
+      "body": "",
+      "labels": [
+        "W44"
+      ],
+      "assignees": [
+        "me"
+      ],
+      "parent": "your-github-handle/app#11",
+      "project_items": [
+        {
+          "id": "ITEM_Ready",
+          "project": {
+            "number": 1
+          },
+          "status": {
+            "name": "Ready"
+          }
+        }
+      ],
+      "comments": [],
+      "blocked_by": [
+        "your-github-handle/app#14"
+      ]
+    },
+    "your-github-handle/app#16": {
+      "id": "I_16",
+      "number": 16,
+      "title": "Fix typo in footer",
+      "state": "OPEN",
+      "url": "https://github.com/your-github-handle/app/issues/16",
+      "body": "",
+      "labels": [
+        "W44"
+      ],
+      "assignees": [
+        "me"
+      ],
+      "parent": "your-github-handle/app#20",
+      "project_items": [
+        {
+          "id": "ITEM_In_progress",
+          "project": {
+            "number": 1
+          },
+          "status": {
+            "name": "In progress"
+          }
+        }
+      ],
+      "comments": []
+    },
+    "your-github-handle/app#20": {
+      "id": "I_20",
+      "number": 20,
+      "title": "Maintenance",
+      "state": "OPEN",
+      "url": "https://github.com/your-github-handle/app/issues/20",
+      "body": "",
+      "labels": [
+        "W44"
+      ],
+      "assignees": [
+        "me"
+      ],
+      "parent": null,
+      "project_items": [
+        {
+          "id": "ITEM_In_progress",
+          "project": {
+            "number": 1
+          },
+          "status": {
+            "name": "In progress"
+          }
+        }
+      ],
+      "comments": [],
+      "sub_issues": [
+        "your-github-handle/app#16"
+      ]
+    }
+  }
+}

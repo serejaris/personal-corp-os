@@ -257,7 +257,7 @@ def validate_manager_distribution() -> None:
         "references/output.md", "references/parent-epic.md", "references/read-mode.md",
         "references/search.md", "references/templates.md", "references/titles.md",
         "references/w-labels.md", "references/write-mode.md",
-        "references/script.md", "scripts/gh_issue.sh", "config.example.json",
+        "references/script.md", "scripts/gh_issue.sh", "scripts/board.jq", "config.example.json",
     }
     for path in manager.rglob("*"):
         if not path.is_file():
