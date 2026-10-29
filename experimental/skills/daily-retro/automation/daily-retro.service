@@ -1,0 +1,7 @@
+[Unit]
+Description=Daily retro from agent logs
+
+[Service]
+Type=oneshot
+WorkingDirectory=%h/your-hq
+ExecStart=/bin/bash -lc 'claude -p "/daily-retro"'
