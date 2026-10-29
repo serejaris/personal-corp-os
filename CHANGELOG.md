@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **manager** ships `scripts/gh_issue.sh`, the single path for GitHub issue writes: `read`, `create`, `ensure`, `comment --image`, `now`, `close`, `block`, `board`. One JSON line per run, safe to rerun, `--dry-run` prints mutations without sending. Project id, Status field and option ids come from `config.json` (template `config.example.json`) or `MANAGER_*` environment variables; without a Project the script still labels, assigns and links the epic. New reference `references/script.md`: commands, agent origin trace in created issues, the result image in work records and PR descriptions, the epic board table.
+- **manager** invariant 7: a PR with a visible result shows the result image in its description and is not handed over for merge without it. New sections: session title with a one-character status prefix, "Полный эпик" (100 sub-issue limit), "Proof при закрытии" template.
 - **corp-new** offers a ready IT department template (`templates/corp-it/`): ten rules (read first, secrets never stored or printed, access recorded in a skill once), a glossary, an engineer agent, a `devices/` inventory folder, the skill `device-inventory` (inventory template and read-only snapshot scripts for macOS and Linux) and the skill `machine-access`.
 - **memory-cleanup**: find and kill process tails that hold memory on macOS and Linux — idle Claude Code desktop sessions, closed-app leftovers, orphaned workers, zombies. Read-only snapshot scripts, kill only on the owner's word with a TERM → KILL pass, swap and pressure before and after.
 

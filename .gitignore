@@ -1,3 +1,5 @@
 .DS_Store
 *.log
 *.tmp
+# local manager config with real Project ids
+skills/manager/config.json
