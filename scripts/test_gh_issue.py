@@ -53,8 +53,8 @@ class Sandbox:
         }
         for key in ("CLAUDECODE", "CLAUDE_CODE_SESSION_ID", "CODEX_THREAD_ID", "CODEX_SESSION_ID",
                     "HERMES_SESSION_ID", "ANTHROPIC_MODEL", "MANAGER_PROJECT_ID", "MANAGER_PROJECT_NUMBER",
-                    "MANAGER_STATUS_FIELD_ID", "MANAGER_STATUS_OPTIONS", "MANAGER_CLONE_ROOTS",
-                    "MANAGER_GITHUB_WEB"):
+                    "MANAGER_STATUS_FIELD_ID", "MANAGER_STATUS_OPTIONS", "MANAGER_GITHUB_WEB",
+                    "SHOTS_BRANCH"):
             self.env.pop(key, None)
 
     def file(self, name: str, text: str) -> str:
@@ -80,8 +80,11 @@ class Sandbox:
     def issue(self, number: int) -> dict:
         return json.loads(self.state.read_text(encoding="utf-8"))["issues"][f"{REPO}#{number}"]
 
+    def repo(self) -> dict:
+        return json.loads(self.state.read_text(encoding="utf-8"))["repos"][REPO]
+
     def files(self) -> dict:
-        return json.loads(self.state.read_text(encoding="utf-8"))["repos"][REPO]["files"]
+        return self.repo()["files"]
 
 
 def usage_error(box: Sandbox, args: tuple[str, ...], needle: str) -> None:
@@ -152,7 +155,7 @@ def check_read_ensure_create(box: Sandbox) -> None:
 
 def check_comment_now_close_block(box: Sandbox) -> None:
     work = box.file("work.md", "Письмо уходит после входа.\n")
-    url = f"https://github.com/{REPO}/blob/{'a' * 40}/docs/shots/welcome.png?raw=true"
+    url = f"https://github.com/{REPO}/blob/{'a' * 40}/shots/welcome.png?raw=true"
     out, _ = box.run("comment", f"{REPO}#13", "--body-file", work, "--image-url", url)
     require(out["result"] == "done", f"comment: {out}")
     require(f"![welcome]({url})" in box.issue(13)["comments"][-1]["body"], "comment must embed --image-url")
@@ -196,10 +199,14 @@ def check_shot(box: Sandbox) -> None:
     image.write_bytes(PNG)
     out, _ = box.run("--dry-run", "shot", f"{REPO}#12", "--image", str(image))
     require(out["result"] == "dry-run" and box.files() == {}, "shot --dry-run must not commit")
+    require("shots" not in box.repo().get("branches", {}), "shot --dry-run must not create the shots branch")
     out, _ = box.run("shot", f"{REPO}#12", "--image", str(image))
-    path = f"docs/shots/{date.today().isoformat()}-12-sign-in.png"
+    path = f"shots/{date.today().isoformat()}-12-sign-in.png"
     commit = box.files()[path]["commit"]
     require(out["result"] == "done" and out["path"] == path and out["sha"] == commit, f"shot: {out}")
+    require("shots" in box.repo()["branches"], "shot must create the shots branch")
+    require(box.files()[path]["branch"] == "shots", "shot must commit to the shots branch, not the default one")
+    require(any("создана ветка shots" in a for a in out["actions"]), "shot must report the created branch")
     want = f"https://github.com/{REPO}/blob/{commit}/{path}?raw=true"
     require(out["url"] == want and re.fullmatch(r"[0-9a-f]{40}", out["sha"]), f"shot url by commit SHA: {out['url']}")
     require(out["markdown"] == f"![sign-in]({want})", "shot markdown")
@@ -223,7 +230,7 @@ def main() -> None:
     if "--show" in sys.argv:
         print(read)
         print(table)
-    print(f"OK: gh_issue.sh one JSON line per run, ensure noop, create dedup, close guard, board, shot by SHA ({SCRIPT.name})")
+    print(f"OK: gh_issue.sh one JSON line per run, ensure noop, create dedup, close guard, board, shot to shots branch by SHA ({SCRIPT.name})")
 
 
 if __name__ == "__main__":

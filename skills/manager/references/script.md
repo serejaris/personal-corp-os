@@ -37,7 +37,7 @@ gh project view 1 --owner your-github-handle --format json --jq .id         # pr
 gh project field-list 1 --owner your-github-handle --format json            # status_field_id и id опций
 ```
 
-Порядок поиска: переменная `MANAGER_CONFIG` → `config.json` в папке скилла → `${XDG_CONFIG_HOME:-~/.config}/manager/config.json`. Переменные окружения перекрывают конфиг: `MANAGER_PROJECT_ID`, `MANAGER_PROJECT_NUMBER`, `MANAGER_STATUS_FIELD_ID`, `MANAGER_STATUS_OPTIONS` (JSON `{"Backlog":"id",…}`), `MANAGER_CLONE_ROOTS` (папки с клонами через `:`).
+Порядок поиска: переменная `MANAGER_CONFIG` → `config.json` в папке скилла → `${XDG_CONFIG_HOME:-~/.config}/manager/config.json`. Переменные окружения перекрывают конфиг: `MANAGER_PROJECT_ID`, `MANAGER_PROJECT_NUMBER`, `MANAGER_STATUS_FIELD_ID`, `MANAGER_STATUS_OPTIONS` (JSON `{"Backlog":"id",…}`).
 
 Доски нет или в конфиге остались заглушки `<…>`: `read`, `comment`, `shot`, `now`, `close`, `block`, `board` работают как обычно, `ensure` и `create` ставят W-label, исполнителя и эпик, а место на доске пропускают с предупреждением.
 
@@ -51,7 +51,7 @@ Id доски, поля и опций живут только в `config.json`: 
 | Создать задачу | `create --repo O/R --title T --body-file F --week W44 --parent REF [--status S]` | 3 |
 | Довести issue до инвариантов 1–5 | `ensure REF --week W44 [--parent REF] [--status S]` | 1–3 |
 | Запись о работе | `comment REF --body-file F [--image-url URL]` | 2 |
-| Положить картинку и получить ссылку по SHA | `shot REF --image shot.png [--dir docs/shots]` | 3 |
+| Положить картинку и получить ссылку по SHA | `shot REF --image shot.png [--dir shots]` | 3 |
 | Заменить секцию `## Сейчас` | `now REF --text "…"` | 2 |
 | Закрыть с Proof | `close REF --proof-file F [--reason not_planned]` | 3 |
 | A ждёт B | `block A --by B` | 2 |
@@ -64,6 +64,14 @@ Id доски, поля и опций живут только в `config.json`: 
 - У эпика 100 подзадач: скрипт останавливается, от 90 предупреждает. Что делать: [parent-epic.md](parent-epic.md) → «Полный эпик».
 - `close` не закрывает issue с открытыми подзадачами без `--force`. После закрытия проверяет, что Proof лежит в таймлайне. На уже закрытом issue без Proof добавляет Proof и не переоткрывает. Шаблон Proof: [templates.md](templates.md) → «Proof при закрытии».
 - Остаток rate limit меньше 200 очков (`GH_ISSUE_RATE_MIN`): скрипт останавливается с `Project lane pending: rate limit`.
+
+Грабли `gh`, которые скрипт обходит проверками:
+
+- `gh api graphql` при `errors` игнорирует `--jq`, поэтому скрипт разбирает ответ через `jq` целиком.
+- `gh project item-list` обрезает большую доску, поэтому карточку на доске скрипт читает через `issue.projectItems`.
+- `gh issue close --comment` на закрытом issue молча ничего не пишет, поэтому `close` сам проверяет состояние и Proof в таймлайне.
+- Ссылка на картинку по имени ветки ломается после удаления ветки, поэтому `shot` отдаёт ссылку по SHA коммита.
+- Страховка на выходе печатает строку JSON, даже если скрипт упал молча; ошибки вызова проверяются до любого `$(…)`, чтобы дойти одной строкой.
 
 ## След агента
 
@@ -84,12 +92,12 @@ Id доски, поля и опций живут только в `config.json`: 
 ```bash
 G=<папка скилла>/scripts/gh_issue.sh
 $G shot your-github-handle/app#12 --image /tmp/sign-in.png
-# {"ok":true,"result":"done","path":"docs/shots/2026-10-29-12-sign-in.png","sha":"<sha коммита>","url":"https://github.com/your-github-handle/app/blob/<sha коммита>/docs/shots/2026-10-29-12-sign-in.png?raw=true",…}
+# {"ok":true,"result":"done","path":"shots/2026-10-29-12-sign-in.png","sha":"<sha коммита>","url":"https://github.com/your-github-handle/app/blob/<sha коммита>/shots/2026-10-29-12-sign-in.png?raw=true",…}
 $G comment your-github-handle/app#12 --body-file /tmp/work.md --image-url "<url из shot>"
 ```
 
-- `shot` кладёт картинку одним коммитом через Contents API в ветку по умолчанию репозитория задачи. Локальную ветку, рабочее дерево и `git push` он не трогает.
-- Путь: `docs/shots/<дата>-<N>-<имя>.png`. Если путь под `.gitignore` локального клона, `shot` берёт `docs/status/`, потом первую отслеживаемую папку `docs/shots` или `docs/status`. Папку задаёт флаг `--dir`. Клон для проверки `.gitignore` скрипт ищет в текущей папке и в `clone_roots` конфига; без клона скрипт пишет предупреждение в `warnings`.
+- `shot` кладёт картинку одним коммитом через Contents API в ветку `shots` репозитория задачи. Ветки нет — создаёт её от ветки по умолчанию; имя меняет переменная `SHOTS_BRANCH`. В main и в ветку PR картинки не идут. Локальную ветку, рабочее дерево и `git push` он не трогает.
+- Путь: `shots/<дата>-<N>-<имя>.png`. Папку задаёт флаг `--dir`.
 - `shot` печатает `path`, `sha` коммита, `url` и готовую строку `markdown`. Ссылка идёт по SHA коммита, поэтому переживает удаление любой ветки. Повторный `shot` той же картинки отдаёт `noop` и ту же ссылку.
 - `comment` в репозиторий ничего не пишет: он вставляет в конец записи `![имя](URL)` для каждого `--image-url`.
 
@@ -102,7 +110,7 @@ PR показывает результат прямо в описании. Бе�
 
 ```bash
 # в /tmp/pr-body.md:
-# ![Страница входа](https://github.com/your-github-handle/app/blob/<sha коммита>/docs/shots/2026-10-29-12-sign-in.png?raw=true)
+# ![Страница входа](https://github.com/your-github-handle/app/blob/<sha коммита>/shots/2026-10-29-12-sign-in.png?raw=true)
 gh pr edit 57 --repo your-github-handle/app --body-file /tmp/pr-body.md
 ```
 

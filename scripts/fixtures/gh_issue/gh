@@ -190,8 +190,21 @@ def rest(state: dict, args: list[str]) -> int:
         print("gh: Not Found (HTTP 404)", file=sys.stderr)
         return 1
     files = info.setdefault("files", {})
+    branches = info.setdefault("branches", {info["default_branch"]: "0" * 40})
     if rest_path == "":
         print(json.dumps({"default_branch": info["default_branch"]}))
+        return 0
+    if rest_path.startswith("/git/ref/heads/"):
+        name = rest_path[len("/git/ref/heads/"):]
+        if name in branches:
+            print(json.dumps({"object": {"sha": branches[name]}}))
+            return 0
+        print("gh: Not Found (HTTP 404)", file=sys.stderr)
+        return 1
+    if rest_path == "/git/refs" and method == "POST":
+        fields = dict(args[i + 1].split("=", 1) for i, a in enumerate(args) if a == "-f")
+        branches[fields["ref"][len("refs/heads/"):]] = fields["sha"]
+        print(json.dumps({"ref": fields["ref"]}))
         return 0
     if rest_path.startswith("/contents/"):
         file_path = rest_path[len("/contents/"):].split("?")[0]
@@ -201,7 +214,7 @@ def rest(state: dict, args: list[str]) -> int:
             raw = base64.b64decode(put["content"])
             blob = git_blob_sha(raw)
             commit = hashlib.sha1(f"{file_path}:{blob}".encode()).hexdigest()
-            files[file_path] = {"sha": blob, "commit": commit}
+            files[file_path] = {"sha": blob, "commit": commit, "branch": put["branch"]}
             print(json.dumps({"content": {"path": file_path, "sha": blob}, "commit": {"sha": commit}}))
             return 0
         if file_path in files:

@@ -103,7 +103,7 @@
           },
           "createdAt": "2026-10-28T12:00:00Z",
           "url": "https://github.com/your-github-handle/app/issues/12#issuecomment-1",
-          "body": "Страница входа готова, превью собрано.\n\n![sign-in](https://github.com/your-github-handle/app/blob/0123456789abcdef0123456789abcdef01234567/docs/shots/2026-10-28-12-sign-in.png?raw=true)"
+          "body": "Страница входа готова, превью собрано.\n\n![sign-in](https://github.com/your-github-handle/app/blob/0123456789abcdef0123456789abcdef01234567/shots/2026-10-28-12-sign-in.png?raw=true)"
         }
       ]
     },

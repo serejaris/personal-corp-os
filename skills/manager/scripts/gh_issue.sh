@@ -1,16 +1,4 @@
 #!/usr/bin/env bash
-# gh_issue.sh — единственная точка записи manager в GitHub issues.
-# Зависимости: gh (авторизованный), jq, git. Совместим с bash 3.2 (macOS). Справка: gh_issue.sh --help.
-#
-# Код выхода: 0 — ok (в том числе "result":"noop"), 1 — ошибка API или инварианта, 2 — ошибка вызова.
-# Любой выход печатает в stdout ровно одну строку JSON.
-# Грабли, зашитые проверками:
-#   - gh api graphql при errors игнорирует --jq → ответ разбирается через jq целиком;
-#   - rate limit: каждое чтение берёт rateLimit; остаток < GH_ISSUE_RATE_MIN (200) → стоп;
-#   - gh project item-list обрезает доску → не используется, Project читается через issue.projectItems;
-#   - gh issue close --comment молча ничего не пишет на закрытом → close сам проверяет state и Proof в таймлайне;
-#   - у родителя максимум 100 sub-issues (закрытые тоже считаются) → ≥100 стоп, ≥90 предупреждение;
-#   - ссылка на картинку по имени ветки ломается после удаления ветки → shot отдаёт ссылку по SHA коммита.
 set -uo pipefail
 
 show_help() {
@@ -22,7 +10,7 @@ gh_issue.sh <подкоманда> [флаги]       каждая подком�
          [--harness H --model M --folder D --session ID --session-url U | --no-origin]
   ensure <ref> --week W [--parent <ref>] [--status S] [--replace-parent]
   comment <ref> --body-file F [--image-url URL]...
-  shot  <ref> --image shot.png [--dir docs/shots]  картинка в ветку по умолчанию, ссылка по SHA коммита
+  shot  <ref> --image shot.png [--dir shots]  картинка в ветку shots (SHOTS_BRANCH), ссылка по SHA коммита
   now   <ref> (--text T | --text-file F)
   close <ref> --proof-file F [--reason completed|not_planned]
   block <ref-A> --by <ref-B>                      A ждёт B
@@ -35,7 +23,7 @@ Status: Backlog | Ready | In progress | In review | Done.
 Конфиг (Project, поле Status, опции статусов) — JSON, пример: config.example.json рядом со скиллом.
 Где ищется: $MANAGER_CONFIG → <папка скилла>/config.json → ${XDG_CONFIG_HOME:-~/.config}/manager/config.json.
 Переменные окружения перекрывают конфиг: MANAGER_PROJECT_ID, MANAGER_PROJECT_NUMBER, MANAGER_STATUS_FIELD_ID,
-MANAGER_STATUS_OPTIONS (JSON {"Backlog":"id",…}), MANAGER_CLONE_ROOTS (папки клонов через «:»).
+MANAGER_STATUS_OPTIONS (JSON {"Backlog":"id",…}).
 Без Project работают read, comment, shot, now, close, block, board; ensure и create ставят метку,
 исполнителя и эпика, а место на доске пропускают с предупреждением.
 EOF
@@ -43,7 +31,6 @@ EOF
 
 command -v jq >/dev/null || { echo '{"ok":false,"result":"usage","error":"нужен jq"}'; exit 2; }
 
-# --- итог: emit печатает одну строку JSON; страховка на EXIT печатает её, если скрипт упал молча ---
 EMITTED=0
 TMP=$(mktemp -d) || { echo '{"ok":false,"result":"error","error":"mktemp не сработал"}'; exit 1; }
 on_exit() {
@@ -66,7 +53,7 @@ warn() { WARNS=$(jpush "$WARNS" "$1"); }
 extra() { EXTRA=$(jq -c --arg k "$1" --argjson v "$2" '. + {($k): $v}' <<<"$EXTRA"); }
 jstr() { jq -cn --arg s "$1" '$s'; }
 
-emit() { # $1 = ok(true|false)  $2 = result
+emit() {
   jq -cn --arg cmd "$CMD" --argjson ok "$1" --arg result "$2" \
     --argjson actions "$ACTIONS" --argjson skipped "$SKIPPED" --argjson warnings "$WARNS" \
     --argjson calls "$CALLS" --argjson rate "$RATE_REMAINING" --argjson dry "$DRY" --argjson extra "$EXTRA" \
@@ -77,15 +64,12 @@ emit() { # $1 = ok(true|false)  $2 = result
 }
 die()   { extra error "$(jstr "$1")"; emit false error; exit 1; }
 usage() { extra error "$(jstr "$1")"; emit false usage; exit 2; }
-# finish <result>: done | dry-run в зависимости от --dry-run
 finish() { if [ "$DRY" = 1 ]; then emit true dry-run; else emit true "${1:-done}"; fi; }
 noop()   { skip "$1"; extra message '"ничего не нужно"'; emit true noop; }
 
-# --- проверки вызова: только в основном шелле, до любого $(…), чтобы ошибка дошла одной строкой ---
 need_val()  { case "${2-}" in ""|--*) usage "флаг $1 без значения" ;; esac; }
 need_file() { [ -f "$1" ] && [ -r "$1" ] || usage "нет файла: $1"; }
 
-# --- конфиг: Project, поле Status, опции статусов (config.example.json) ---
 SCRIPT_DIR=$(cd "$(dirname "$0")" 2>/dev/null && pwd)
 SKILL_DIR=$(cd "$SCRIPT_DIR/.." 2>/dev/null && pwd)
 CFG_FILE=""
@@ -101,16 +85,14 @@ P_ID="${MANAGER_PROJECT_ID:-$(cfg .project.id)}"
 P_NUM="${MANAGER_PROJECT_NUMBER:-$(cfg .project.number)}"
 P_STATUS_FIELD="${MANAGER_STATUS_FIELD_ID:-$(cfg .project.status_field_id)}"
 STATUS_OPTS="${MANAGER_STATUS_OPTIONS:-$(jq -c '.project.status_options // {}' <<<"$CFG")}"
-CLONE_ROOTS="${MANAGER_CLONE_ROOTS:-$(jq -r '(.clone_roots // []) | join(":")' <<<"$CFG")}"
 WEEK_LABEL_COLOR="${MANAGER_WEEK_LABEL_COLOR:-$(cfg .week_label_color)}"; WEEK_LABEL_COLOR="${WEEK_LABEL_COLOR:-0E8A16}"
 GH_WEB="${MANAGER_GITHUB_WEB:-https://github.com}"
-[[ "$P_NUM" =~ ^[0-9]+$ ]] || P_NUM=-1   # номер Project нужен для фильтра карточек; -1 = доски нет
-case "$P_ID$P_STATUS_FIELD" in *"<"*) P_ID="" ;; esac   # заглушки из config.example.json = доска не настроена
+[[ "$P_NUM" =~ ^[0-9]+$ ]] || P_NUM=-1
+case "$P_ID$P_STATUS_FIELD" in *"<"*) P_ID="" ;; esac
 HAS_PROJECT=0; [ -n "$P_ID" ] && [ -n "$P_STATUS_FIELD" ] && [ "$P_NUM" != -1 ] && HAS_PROJECT=1
 RATE_MIN="${GH_ISSUE_RATE_MIN:-200}"
 BATCH=20
 
-# --- статусы: один список, порядок = ранг ---
 STATUSES=(Backlog Ready "In progress" "In review" Done)
 status_rank() {
   local i=0 s
@@ -121,29 +103,25 @@ status_opt() {
   [ "$(status_rank "$1")" -ge 0 ] || return 0
   jq -r --arg s "$1" '.[$s] // empty' <<<"$STATUS_OPTS" 2>/dev/null
 }
-# check_status <S>: имя из списка; при настроенной доске у него должен быть id опции в конфиге
 check_status() {
   [ "$(status_rank "$1")" -ge 0 ] || usage "Status: Backlog | Ready | In progress | In review | Done"
   [ "$HAS_PROJECT" != 1 ] || [ -n "$(status_opt "$1")" ] \
     || usage "нет id опции «$1» в project.status_options конфига: gh project field-list N --owner OWNER --format json"
 }
 
-# check_parent_cap <parent-ref> <total>: лимит 100 sub-issues у родителя (закрытые считаются)
 check_parent_cap() {
   [ "$2" -lt 100 ] || die "у родителя $1 уже $2 sub-issues (лимит 100, закрытые считаются): references/parent-epic.md § «Полный эпик»"
   [ "$2" -lt 90 ] || warn "у родителя $1 $2 sub-issues из 100: пора ревью по § «Полный эпик» в references/parent-epic.md"
 }
 
 trim_json() { jq -Rs 'sub("^\\s+";"") | sub("\\s+$";"")'; }
-# has_comment <issue-json> <text>: такой комментарий (без учёта пробелов по краям) уже в таймлайне
 has_comment() {
   jq -e --argjson b "$(trim_json <<<"$2")" \
     '[.comments.nodes[].body | sub("^\\s+";"") | sub("\\s+$";"")] | index($b) != null' >/dev/null <<<"$1"
 }
 
-gqlstr() { jq -rn --arg s "$1" '$s|@json'; }   # безопасный строковый литерал GraphQL
+gqlstr() { jq -rn --arg s "$1" '$s|@json'; }
 
-# gql <query> [vars-json] [read|write] → глобальная RESP
 gql() {
   local q="$1" v="${2:-}" kind="${3:-read}" payload msg rem
   [ -n "$v" ] || v='{}'
@@ -178,7 +156,6 @@ gql() {
   return 0
 }
 
-# parse_ref <ref> → печатает «owner repo num»; плохая ссылка → пусто и код 1
 parse_ref() {
   local s="$1"
   s="${s#"$GH_WEB"/}"; s="${s/\/issues\//#}"
@@ -220,8 +197,6 @@ SUMM='def summ: {
     {author: (.author.login // "ghost"), at: .createdAt, text: (.body | gsub("\\s+";" ") | .[0:160])} end)
 };'
 
-# след агента (кто создал issue: харнес, модель, папка, сессия), его читают уведомления и аудит:
-# <!-- origin: harness=…; model=…; folder=…; session=…; url=… --> ; пустые поля не пишутся
 origin_clean() { printf '%s' "$1" | tr '\n' ' ' | sed -e 's/-->//g' -e 's/;//g' -e 's/^ *//' -e 's/ *$//'; }
 origin_trailer() {
   local h="$1" m="$2" f="$3" s="$4" u="$5" parts="" k v
@@ -240,8 +215,6 @@ origin_trailer() {
   [ -z "$parts" ] || printf '<!-- origin: %s -->' "$parts"
 }
 
-# replace_now <issue-json с .body> <text> → новое тело в stdout (+ "x" в конце, срезать)
-# Секция «## Сейчас» — до следующего заголовка # или ## вне блока кода; нет секции — дописать в конец.
 replace_now() {
   jq -j --arg t "$2" '
     (.body // "") as $b | ($t | sub("\\s+$";"")) as $t | ($b | split("\n")) as $L
@@ -257,10 +230,8 @@ replace_now() {
       else ($L[0:$x.s] + ["## Сейчас", "", $t, ""] + $L[$x.e:]) | join("\n") end' <<<"$1"
   printf x
 }
-# body_of <issue-json> → тело как есть + "x" (сравнивать с "${newbody}x": $(…) не съест хвостовые переводы строк)
 body_of() { jq -j '.body // ""' <<<"$1"; printf x; }
 
-# read_one <ref> <nc> <withBody> → RESP, T
 read_one() {
   local o r n; read -r o r n <<<"$(parse_ref "$1")"
   gql "$QHEAD t: $(repo_alias "$o" "$r") { issue(number:$n) { ...F } } } $FRAG" \
@@ -270,7 +241,6 @@ read_one() {
   extra ref "$(jstr "$o/$r#$n")"
 }
 
-# ---------------- read ----------------
 cmd_read() {
   [ $# -gt 0 ] || usage "read: нужен хотя бы один owner/repo#N"
   local a; for a in "$@"; do case "$a" in -*) usage "read: неизвестный флаг $a" ;; esac; check_ref "$a"; done
@@ -301,8 +271,6 @@ cmd_read() {
   if [ "$errs" = '[]' ]; then emit true done; else emit false partial; exit 1; fi
 }
 
-# ------------- ensure (ядро, используется и create) -------------
-# ensure_core <ref> <week> <parent-ref|""> <status|""> <replace-parent 0|1>; ссылки уже проверены
 ensure_core() {
   local ref="$1" week="$2" pref="$3" status="$4" replace="$5"
   local q T issue_id repo_id state lbl_id viewer_id has_week n_assignees cur_parent item cur_status
@@ -329,7 +297,6 @@ ensure_core() {
   extra ref "$(jstr "$tref")"
   [ "$state" = OPEN ] || warn "issue закрыт: статус доски не трогаю"
 
-  # 1. W-label
   if [ "$has_week" = true ]; then skip "label $week уже есть"
   elif [ -n "$lbl_id" ]; then
     m1+=" l: addLabelsToLabelable(input:{labelableId:$(gqlstr "$issue_id"), labelIds:[$(gqlstr "$lbl_id")]}) { clientMutationId }"
@@ -338,13 +305,11 @@ ensure_core() {
     m1+=" cl: createLabel(input:{repositoryId:$(gqlstr "$repo_id"), name:$(gqlstr "$week"), color:\"$WEEK_LABEL_COLOR\"}) { label { id } }"
     need_lbl2=1; act "создана метка $week в репо + label $week"
   fi
-  # 2. assignee: только если исполнителя нет
   if [ "$n_assignees" -gt 0 ]; then skip "assignee уже есть"
   else
     m1+=" a: addAssigneesToAssignable(input:{assignableId:$(gqlstr "$issue_id"), assigneeIds:[$(gqlstr "$viewer_id")]}) { clientMutationId }"
     act "assignee @me"
   fi
-  # 3. parent
   if [ -n "$pref" ]; then
     pid=$(jq -r '.data.p.issue.id // empty' <<<"$RESP")
     [ -n "$pid" ] || die "родитель $pref не найден"
@@ -364,7 +329,6 @@ ensure_core() {
   else
     skip "parent $cur_parent уже стоит"
   fi
-  # 4. Project #$P_NUM (только если доска настроена в конфиге)
   if [ "$HAS_PROJECT" != 1 ]; then
     warn "Project не настроен (config.example.json): место на доске и Status пропущены"
   elif [ -n "$item" ]; then skip "на доске #$P_NUM уже есть"
@@ -372,7 +336,6 @@ ensure_core() {
     m1+=" pa: addProjectV2ItemById(input:{projectId:\"$P_ID\", contentId:$(gqlstr "$issue_id")}) { item { id } }"
     act "добавлен в Project #$P_NUM"
   fi
-  # 5. Status
   if [ "$HAS_PROJECT" != 1 ] || [ "$state" != OPEN ]; then :
   elif [ -n "$status" ]; then
     opt=$(status_opt "$status")
@@ -388,7 +351,6 @@ ensure_core() {
   elif [ -z "$cur_status" ]; then
     warn "Status на доске #$P_NUM пуст: укажи --status"
   fi
-  # 6. родитель виден на доске (инвариант 5) — только сообщаем
   if [ "$HAS_PROJECT" = 1 ] && [ -z "$pref" ] && [ -n "$cur_parent" ] \
      && [ "$(jq -r --argjson pnum "$P_NUM" '[.parent.projectItems.nodes[] | select(.project.number==$pnum)] | length' <<<"$T")" = 0 ]; then
     warn "родитель $cur_parent не на доске #$P_NUM: прогони ensure для него"
@@ -421,7 +383,6 @@ cmd_ensure() {
   if [ "$ACTIONS" = '[]' ]; then extra message '"ничего не нужно"'; emit true noop; else finish; fi
 }
 
-# ---------------- create ----------------
 cmd_create() {
   local repo="" title="" body_file="" week="" parent="" status="Backlog" q dup body ro rr po pr pn
   local o_harness="" o_model="" o_folder="" o_session="" o_url="" no_origin=0 trailer
@@ -459,7 +420,6 @@ cmd_create() {
   ptotal=$(jq -r '.data.p.issue.subIssuesSummary.total' <<<"$RESP")
   repo_id=$(jq -r '.data.r.id' <<<"$RESP"); lbl_id=$(jq -r '.data.r.lbl.id // empty' <<<"$RESP")
   viewer_id=$(jq -r '.data.viewer.id' <<<"$RESP")
-  # идемпотентность: открытый issue с тем же заголовком в репо или среди детей родителя → не создаём
   dup=$(jq -r --arg t "$title" --arg repo "$repo" '
     [ (.data.dup.nodes[]?, .data.p.issue.subIssues.nodes[]?)
       | select(.title != null and .title == $t and .state == "OPEN" and .repository.nameWithOwner == $repo)
@@ -495,7 +455,7 @@ cmd_create() {
   fi
   [ -z "$lbl_id" ] && m2+=" l: addLabelsToLabelable(input:{labelableId:$(gqlstr "$new_id"), labelIds:[$(gqlstr "$new_lbl")]}) { clientMutationId }"
   if [ "$HAS_PROJECT" = 1 ]; then
-    if [ -z "$new_item" ]; then  # карточка не вернулась из createIssue — добавляем отдельно
+    if [ -z "$new_item" ]; then
       gql "mutation { pa: addProjectV2ItemById(input:{projectId:\"$P_ID\", contentId:$(gqlstr "$new_id")}) { item { id } } }" '' write
       new_item=$(jq -r '.data.pa.item.id // empty' <<<"$RESP")
       [ "$DRY" = 1 ] && new_item="<id карточки>"
@@ -508,33 +468,12 @@ cmd_create() {
   finish
 }
 
-# ---------------- shot ----------------
-# Картинка кладётся одним коммитом через Contents API в ветку по умолчанию. Локальные ветки и push
-# не трогаются. Ссылка строится по SHA коммита и переживает удаление любой ветки.
-remote_slug() {
-  git -C "$1" remote get-url origin 2>/dev/null \
-    | sed -E -e 's#^(https://github\.com/|git@github\.com:|ssh://git@github\.com/)##' -e 's#\.git$##'
-}
-# local_clone <owner> <repo> → путь клона: текущая папка или папки clone_roots конфига
-local_clone() {
-  local o="$1" r="$2" top root d roots=()
-  top=$(git rev-parse --show-toplevel 2>/dev/null || true)
-  if [ -n "$top" ] && [ "$(remote_slug "$top")" = "$o/$r" ]; then echo "$top"; return; fi
-  IFS=: read -r -a roots <<<"$CLONE_ROOTS"
-  for root in ${roots[@]+"${roots[@]}"}; do
-    root="${root/#\~/$HOME}"
-    for d in "$root/$r" "$root/$o/$r"; do
-      if [ -d "$d/.git" ] && [ "$(remote_slug "$d")" = "$o/$r" ]; then echo "$d"; return; fi
-    done
-  done
-}
-
 cmd_shot() {
-  local ref="" src="" dir="" o r n ext base name clone cand path="" branch sha_remote sha_local commit url
+  local ref="" src="" dir="" o r n ext base name path="" branch sha_remote sha_local commit url
   while [ $# -gt 0 ]; do case "$1" in
     --image) need_val "$@"; src="$2"; shift 2 ;; --dir) need_val "$@"; dir="${2%/}"; shift 2 ;;
     -*) usage "shot: неизвестный флаг $1" ;; *) ref="$1"; shift ;; esac; done
-  [ -n "$ref" ] && [ -n "$src" ] || usage "shot <owner/repo#N> --image shot.png [--dir docs/shots]"
+  [ -n "$ref" ] && [ -n "$src" ] || usage "shot <owner/repo#N> --image shot.png [--dir shots]"
   check_ref "$ref"; need_file "$src"
   ext=$(tr 'A-Z' 'a-z' <<<"${src##*.}")
   case "$ext" in png|jpg|jpeg|gif|webp) ;; *) usage "картинка должна быть png/jpg/gif/webp: $src" ;; esac
@@ -542,25 +481,20 @@ cmd_shot() {
   extra ref "$(jstr "$o/$r#$n")"
   base=$(basename "$src" ".${src##*.}" | tr 'A-Z' 'a-z' | sed -E 's/[^a-z0-9]+/-/g; s/^-+//; s/-+$//' | cut -c1-40)
   name="$(date +%F)-$n-${base:-shot}.$ext"
-  clone=$(local_clone "$o" "$r")
-  # путь: --dir; иначе docs/shots, docs/status; всё под .gitignore → первая отслеживаемая docs/shots или docs/status
-  local cands=(docs/shots docs/status); [ -z "$dir" ] || cands=("$dir")
-  for cand in "${cands[@]}"; do
-    if [ -z "$clone" ] || ! git -C "$clone" check-ignore -q --no-index "$cand/$name" 2>/dev/null; then
-      path="$cand/$name"; break
-    fi
-  done
-  if [ -z "$path" ] && [ -z "$dir" ]; then
-    cand=$(git -C "$clone" ls-files | grep -E '(^|/)docs/(shots|status)/[^/]+$' | sed 's#/[^/]*$##' | sort -u | head -1)
-    [ -z "$cand" ] || path="$cand/$name"
-  fi
-  [ -n "$path" ] || die "все пути для картинки под .gitignore (${cands[*]}): укажи --dir"
-  [ -n "$clone" ] || warn "нет локального клона $o/$r: путь $path не проверен на .gitignore"
+  path="${dir:-shots}/$name"
   extra path "$(jstr "$path")"
 
   CALLS=$((CALLS+1))
-  branch=$(gh api "repos/$o/$r" 2>"$TMP/err" | jq -r '.default_branch // empty' 2>/dev/null)
-  [ -n "$branch" ] || die "не прочитал репо $o/$r: $(head -c 200 "$TMP/err" | tr '\n' ' ')"
+  branch="${SHOTS_BRANCH:-shots}"
+  if ! gh api "repos/$o/$r/git/ref/heads/$branch" >/dev/null 2>&1; then
+    local def base_sha
+    def=$(gh api "repos/$o/$r" 2>"$TMP/err" | jq -r '.default_branch // empty' 2>/dev/null)
+    [ -n "$def" ] || die "не прочитал репо $o/$r: $(head -c 200 "$TMP/err" | tr '\n' ' ')"
+    base_sha=$(gh api "repos/$o/$r/git/ref/heads/$def" | jq -r '.object.sha')
+    if [ "$DRY" = 1 ]; then act "ветка $branch от $def (не выполнено: dry-run)"
+    else gh api -X POST "repos/$o/$r/git/refs" -f ref="refs/heads/$branch" -f sha="$base_sha" >/dev/null || die "не создал ветку $branch в $o/$r"
+      act "создана ветка $branch от $def"; fi
+  fi
   CALLS=$((CALLS+1))
   sha_remote=$(gh api "repos/$o/$r/contents/$path?ref=$branch" 2>/dev/null | jq -r '.sha // empty' 2>/dev/null)
   sha_local=$(git hash-object "$src")
@@ -586,7 +520,6 @@ cmd_shot() {
   emit true "$( [ "$ACTIONS" = '[]' ] && echo noop || echo done )"
 }
 
-# ---------------- comment ----------------
 cmd_comment() {
   local ref="" f="" body vars id urls=() u alt
   while [ $# -gt 0 ]; do case "$1" in
@@ -610,7 +543,6 @@ cmd_comment() {
   finish
 }
 
-# ---------------- now ----------------
 cmd_now() {
   local ref="" text="" tfile="" newbody vars
   while [ $# -gt 0 ]; do case "$1" in
@@ -620,7 +552,6 @@ cmd_now() {
   [ -n "$ref" ] && [ -n "$text" ] || usage "now <owner/repo#N> --text \"...\" (или --text-file F)"
   check_ref "$ref"
   read_one "$ref" 1 true
-  # таблица эпика (блок board) переживает замену текста
   local blk; blk=$(jq -r '(.body // "") | (capture("(?<b><!-- board:start -->[\\s\\S]*<!-- board:end -->)").b // "")' <<<"$T")
   [ -z "$blk" ] || text="$text"$'\n\n'"$blk"
   newbody=$(replace_now "$T" "$text"); newbody="${newbody%x}"
@@ -631,7 +562,6 @@ cmd_now() {
   finish
 }
 
-# ---------------- close ----------------
 cmd_close() {
   local ref="" f="" reason=COMPLETED proof id state has_proof=false m vars open_subs
   while [ $# -gt 0 ]; do case "$1" in
@@ -666,7 +596,6 @@ cmd_close() {
   vars=$(jq -cn --arg id "$id" --arg b "$proof" '{id:$id, b:$b}')
   gql "mutation(\$id:ID!, \$b:String!) { $m }" "$vars" write
   if [ "$DRY" = 1 ]; then finish; return 0; fi
-  # проверка: issue закрыт и Proof в таймлайне
   read_one "$ref" 5 false
   [ "$(jq -r '.state' <<<"$T")" = CLOSED ] || die "после closeIssue issue не закрыт"
   has_comment "$T" "$proof" || die "Proof не найден в последних комментариях после закрытия"
@@ -674,10 +603,6 @@ cmd_close() {
   emit true done
 }
 
-# ---------------- board ----------------
-# Пересобирает в теле эпика блок между <!-- board:start --> и <!-- board:end --> внутри «## Сейчас»:
-# таблица открытых детей + «Как выглядит» (последняя картинка из комментариев каждого ребёнка).
-# Сама таблица строится в scripts/board.jq. Текст секции до блока сохраняется; остальное тело не трогается.
 cmd_board() {
   local ref="" q E block lead newbody vars o r n
   while [ $# -gt 0 ]; do case "$1" in
@@ -701,7 +626,6 @@ cmd_board() {
   extra ref "$(jstr "$o/$r#$n")"
   [ "$(jq -r '.subIssuesSummary.total' <<<"$E")" -gt 0 ] || die "у $o/$r#$n нет sub-issues: это не эпик"
   block=$(jq -r --argjson pnum "$P_NUM" -f "$SCRIPT_DIR/board.jq" <<<"$E")
-  # вводный текст секции до блока сохраняем; блока нет — берём текст секции до первой таблицы или ###
   lead=$(jq -r '
     (.body // "") as $b
     | if ($b | test("<!-- board:start -->")) then
@@ -723,7 +647,6 @@ cmd_board() {
   finish
 }
 
-# ---------------- block ----------------
 cmd_block() {
   local a="" b="" q aid bid ao ar an bo br bn
   while [ $# -gt 0 ]; do case "$1" in
@@ -756,7 +679,6 @@ cmd_block() {
   finish
 }
 
-# --- разбор: общие флаги один раз для всей строки, первое слово без «-» — подкоманда ---
 ARGS=()
 for a in "$@"; do
   case "$a" in
