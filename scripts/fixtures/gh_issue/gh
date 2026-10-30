@@ -1,0 +1,252 @@
+#!/usr/bin/env python3
+"""Fake `gh` for scripts/test_gh_issue.py: answers the GraphQL and REST calls gh_issue.sh makes.
+
+State lives in the JSON file named by FAKE_GH_STATE and is rewritten after every mutation.
+Every call is appended to FAKE_GH_LOG (one JSON line) when that variable is set.
+"""
+
+from __future__ import annotations
+
+import base64
+import hashlib
+import json
+import os
+import re
+import sys
+
+STR = r'"(?:[^"\\]|\\.)*"'
+
+
+def load() -> dict:
+    with open(os.environ["FAKE_GH_STATE"], encoding="utf-8") as fh:
+        return json.load(fh)
+
+
+def save(state: dict) -> None:
+    with open(os.environ["FAKE_GH_STATE"], "w", encoding="utf-8") as fh:
+        json.dump(state, fh, ensure_ascii=False, indent=2)
+
+
+def log(entry: dict) -> None:
+    path = os.environ.get("FAKE_GH_LOG")
+    if path:
+        with open(path, "a", encoding="utf-8") as fh:
+            fh.write(json.dumps(entry, ensure_ascii=False) + "\n")
+
+
+def by_id(state: dict, node_id: str) -> tuple[str, dict] | tuple[None, None]:
+    for ref, issue in state["issues"].items():
+        if issue["id"] == node_id:
+            return ref, issue
+    return None, None
+
+
+def repo_of(ref: str) -> str:
+    return ref.split("#")[0]
+
+
+def short_node(state: dict, ref: str) -> dict:
+    issue = state["issues"][ref]
+    return {"id": issue["id"], "number": issue["number"], "title": issue["title"], "state": issue["state"],
+            "repository": {"nameWithOwner": repo_of(ref)}}
+
+
+def expand(state: dict, ref: str, depth: int = 0) -> dict:
+    issue = dict(state["issues"][ref])
+    repo = repo_of(ref)
+    children = [r for r in issue.pop("sub_issues", [])]
+    parent = issue.pop("parent", None)
+    blocked = issue.pop("blocked_by", [])
+    issue["repository"] = {"id": state["repos"][repo]["id"], "nameWithOwner": repo}
+    issue["labels"] = {"nodes": [{"name": n} for n in issue.get("labels", [])]}
+    issue["assignees"] = {"nodes": [{"login": n} for n in issue.get("assignees", [])]}
+    issue["projectItems"] = {"nodes": issue.get("project_items", [])}
+    issue.pop("project_items", None)
+    comments = issue.get("comments", [])
+    issue["comments"] = {"totalCount": len(comments), "nodes": comments}
+    issue["subIssuesSummary"] = {
+        "total": len(children),
+        "completed": sum(1 for c in children if state["issues"][c]["state"] != "OPEN"),
+    }
+    blocking = sum(1 for other in state["issues"].values() if ref in other.get("blocked_by", []))
+    issue["issueDependenciesSummary"] = {"blockedBy": len(blocked), "blocking": blocking}
+    issue["blockedBy"] = {"nodes": [short_node(state, b) for b in blocked]}
+    issue["parent"] = None
+    if parent:
+        p = short_node(state, parent)
+        p["projectItems"] = {"nodes": state["issues"][parent].get("project_items", [])}
+        issue["parent"] = p
+    if depth == 0:
+        issue["subIssues"] = {"nodes": [expand(state, c, 1) for c in children]}
+    return issue
+
+
+def value(token: str, variables: dict):
+    token = token.strip()
+    if token.startswith("$"):
+        return variables.get(token[1:])
+    return json.loads(token)
+
+
+def arg(text: str, name: str, variables: dict):
+    m = re.search(rf"\b{name}:(\${{1}}\w+|{STR})", text)
+    return value(m.group(1), variables) if m else None
+
+
+def graphql(state: dict, payload: dict) -> dict:
+    q, variables = payload["query"], payload.get("variables") or {}
+    data: dict = {}
+    errors: list = []
+    if q.lstrip().startswith("mutation"):
+        for m in re.finditer(r"(\w+): (\w+)\(input:\{(.*?)\}\)", q, re.S):
+            alias, op, body = m.group(1), m.group(2), m.group(3)
+            if op == "addComment":
+                ref, issue = by_id(state, arg(body, "subjectId", variables))
+                n = len(issue.setdefault("comments", [])) + 1
+                url = f"https://github.com/{repo_of(ref)}/issues/{issue['number']}#issuecomment-{n}"
+                issue["comments"].append({"author": {"login": "me"}, "createdAt": "2026-10-29T10:00:00Z",
+                                          "url": url, "body": arg(body, "body", variables)})
+                data[alias] = {"commentEdge": {"node": {"url": url}}, "clientMutationId": None}
+            elif op == "closeIssue":
+                _, issue = by_id(state, arg(body, "issueId", variables))
+                issue["state"] = "CLOSED"
+                data[alias] = {"issue": {"state": "CLOSED"}}
+            elif op == "updateIssue":
+                _, issue = by_id(state, arg(body, "id", variables))
+                issue["body"] = arg(body, "body", variables)
+                data[alias] = {"issue": {"id": issue["id"]}}
+            elif op == "createIssue":
+                repo = next(r for r, v in state["repos"].items() if v["id"] == arg(body, "repositoryId", variables))
+                num = max(i["number"] for k, i in state["issues"].items() if repo_of(k) == repo) + 1
+                ref = f"{repo}#{num}"
+                parent_ref, parent = by_id(state, arg(body, "parentIssueId", variables))
+                state["issues"][ref] = {"id": f"I_{num}", "number": num, "title": arg(body, "title", variables),
+                                        "state": "OPEN", "url": f"https://github.com/{repo}/issues/{num}",
+                                        "body": arg(body, "body", variables), "labels": [], "assignees": ["me"],
+                                        "parent": parent_ref, "project_items": [], "comments": []}
+                parent.setdefault("sub_issues", []).append(ref)
+                data[alias] = {"issue": {"id": f"I_{num}", "number": num, "url": f"https://github.com/{repo}/issues/{num}",
+                                         "projectItems": {"nodes": []}}}
+            elif op == "createLabel":
+                data[alias] = {"label": {"id": "LA_new"}}
+            elif op == "addProjectV2ItemById":
+                data[alias] = {"item": {"id": "ITEM_new"}}
+            else:
+                data[alias] = {"clientMutationId": None}
+        return {"data": data}
+
+    data["rateLimit"] = {"remaining": 4999, "resetAt": "2026-10-29T11:00:00Z", "cost": 1}
+    if re.search(r"\bviewer\s*\{", q):
+        data["viewer"] = {"id": "U_me", "login": "me"}
+    repo_re = re.compile(rf"(\w+): repository\(owner:({STR}), name:({STR})\)\s*\{{")
+    matches = list(repo_re.finditer(q))
+    for idx, m in enumerate(matches):
+        alias, repo = m.group(1), f"{json.loads(m.group(2))}/{json.loads(m.group(3))}"
+        end = matches[idx + 1].start() if idx + 1 < len(matches) else len(q)
+        segment = q[m.end():end]
+        obj: dict = {}
+        if repo in state["repos"] and re.match(r"\s*id\b", segment):
+            obj["id"] = state["repos"][repo]["id"]
+        num = re.match(r"\s*issue\(number:(\d+)\)", segment)
+        if num:
+            ref = f"{repo}#{num.group(1)}"
+            if ref in state["issues"]:
+                obj["issue"] = expand(state, ref)
+            else:
+                obj["issue"] = None
+                errors.append({"type": "NOT_FOUND", "path": [alias, "issue"],
+                               "message": f"Could not resolve to an Issue with the number of {num.group(1)}."})
+        lbl = re.search(rf"lbl: label\(name:({STR})\)", segment)
+        if lbl:
+            label_id = state["repos"].get(repo, {}).get("labels", {}).get(json.loads(lbl.group(1)))
+            obj["lbl"] = {"id": label_id} if label_id else None
+        data[alias] = obj if repo in state["repos"] else None
+    dup = re.search(rf"dup: search\(type:ISSUE, first:\d+, query:({STR})\)", q)
+    if dup:
+        query = json.loads(dup.group(1))
+        repo = re.search(r"repo:(\S+)", query).group(1)
+        title = re.search(r'in:title "(.*)"', query).group(1)
+        data["dup"] = {"nodes": [short_node(state, r) for r, i in state["issues"].items()
+                                 if repo_of(r) == repo and title in i["title"]]}
+    out = {"data": data}
+    if errors:
+        out["errors"] = errors
+    return out
+
+
+def git_blob_sha(raw: bytes) -> str:
+    return hashlib.sha1(b"blob %d\0" % len(raw) + raw).hexdigest()
+
+
+def rest(state: dict, args: list[str]) -> int:
+    method = "GET"
+    if "-X" in args:
+        method = args[args.index("-X") + 1]
+    path = next(a for a in args[1:] if a.startswith("repos/"))
+    m = re.match(r"repos/([^/]+/[^/?]+)(.*)", path)
+    repo, rest_path = m.group(1), m.group(2)
+    info = state["repos"].get(repo)
+    if info is None:
+        print("gh: Not Found (HTTP 404)", file=sys.stderr)
+        return 1
+    files = info.setdefault("files", {})
+    branches = info.setdefault("branches", {info["default_branch"]: "0" * 40})
+    if rest_path == "":
+        print(json.dumps({"default_branch": info["default_branch"]}))
+        return 0
+    if rest_path.startswith("/git/ref/heads/"):
+        name = rest_path[len("/git/ref/heads/"):]
+        if name in branches:
+            print(json.dumps({"object": {"sha": branches[name]}}))
+            return 0
+        print("gh: Not Found (HTTP 404)", file=sys.stderr)
+        return 1
+    if rest_path == "/git/refs" and method == "POST":
+        fields = dict(args[i + 1].split("=", 1) for i, a in enumerate(args) if a == "-f")
+        branches[fields["ref"][len("refs/heads/"):]] = fields["sha"]
+        print(json.dumps({"ref": fields["ref"]}))
+        return 0
+    if rest_path.startswith("/contents/"):
+        file_path = rest_path[len("/contents/"):].split("?")[0]
+        if method == "PUT":
+            with open(args[args.index("--input") + 1], encoding="utf-8") as fh:
+                put = json.load(fh)
+            raw = base64.b64decode(put["content"])
+            blob = git_blob_sha(raw)
+            commit = hashlib.sha1(f"{file_path}:{blob}".encode()).hexdigest()
+            files[file_path] = {"sha": blob, "commit": commit, "branch": put["branch"]}
+            print(json.dumps({"content": {"path": file_path, "sha": blob}, "commit": {"sha": commit}}))
+            return 0
+        if file_path in files:
+            print(json.dumps({"path": file_path, "sha": files[file_path]["sha"]}))
+            return 0
+        print("gh: Not Found (HTTP 404)", file=sys.stderr)
+        return 1
+    if rest_path.startswith("/commits?"):
+        file_path = re.search(r"path=([^&]+)", rest_path).group(1)
+        print(json.dumps([{"sha": files[file_path]["commit"]}] if file_path in files else []))
+        return 0
+    print(f"fake gh: unsupported REST path {path}", file=sys.stderr)
+    return 1
+
+
+def main() -> int:
+    args = sys.argv[1:]
+    state = load()
+    if args[:2] == ["api", "graphql"]:
+        payload = json.load(sys.stdin)
+        log({"args": args, "query": payload["query"][:80]})
+        print(json.dumps(graphql(state, payload), ensure_ascii=False))
+        save(state)
+        return 0
+    if args and args[0] == "api":
+        log({"args": args})
+        code = rest(state, args)
+        save(state)
+        return code
+    print(f"fake gh: unsupported call {args}", file=sys.stderr)
+    return 1
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

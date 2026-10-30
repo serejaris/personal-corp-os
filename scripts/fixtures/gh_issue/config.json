@@ -1,0 +1,15 @@
+{
+  "project": {
+    "number": 1,
+    "id": "PROJECT_1",
+    "status_field_id": "FIELD_STATUS",
+    "status_options": {
+      "Backlog": "OPT_BACKLOG",
+      "Ready": "OPT_READY",
+      "In progress": "OPT_IN_PROGRESS",
+      "In review": "OPT_IN_REVIEW",
+      "Done": "OPT_DONE"
+    }
+  },
+  "week_label_color": "0E8A16"
+}
