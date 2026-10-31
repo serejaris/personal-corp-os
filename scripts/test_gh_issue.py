@@ -166,8 +166,6 @@ def card_status(box: Sandbox, number: int) -> str | None:
 
 
 def check_card_on_board(box: Sandbox) -> None:
-    """GitHub puts the card on the board itself, a moment after createIssue answers without it.
-    In that window addProjectV2ItemById refuses with "Content already exists in this project"."""
     body = box.file("body.md", "Карточка встаёт сама.\n")
     create = ("create", "--repo", REPO, "--body-file", body, "--parent", f"{REPO}#11", "--no-origin")
 
@@ -206,7 +204,7 @@ def check_card_on_board(box: Sandbox) -> None:
     require(box.issue(17)["labels"] == ["W44"], "ensure must keep the label set next to the refused add")
     require(card_status(box, 17) == "Ready", "ensure must set Status on the card it found")
     out, _ = box.run("ensure", f"{REPO}#17", "--week", "W44", "--status", "Ready")
-    require(out["skipped"] and any("уже есть" in s for s in out["skipped"]), f"ensure rerun: {out}")
+    require(any("уже есть" in s for s in out["skipped"]), f"ensure rerun: {out}")
 
 
 def check_comment_now_close_block(box: Sandbox) -> None:
