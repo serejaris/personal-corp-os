@@ -1,0 +1,15 @@
+{
+  "project": {
+    "number": 1,
+    "id": "<node id доски: gh project view 1 --owner your-github-handle --format json --jq .id>",
+    "status_field_id": "<id поля Status: gh project field-list 1 --owner your-github-handle --format json>",
+    "status_options": {
+      "Backlog": "<id опции>",
+      "Ready": "<id опции>",
+      "In progress": "<id опции>",
+      "In review": "<id опции>",
+      "Done": "<id опции>"
+    }
+  },
+  "week_label_color": "0E8A16"
+}
