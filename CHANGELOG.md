@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **corp-new** explains how to add a skill to a department, with rules files, skill folders and invocation per harness (Claude Code, Codex) and links per OS (macOS/Linux symlinks, Windows `@AGENTS.md` import and junction).
 
 ### Fixed
+- **manager** `gh_issue.sh`: `create` and `ensure` no longer report `Content already exists in this project` as a failure. GitHub adds the card a moment after `createIssue`; the script now takes the id of the card on the board and sets Status, waiting up to 10 seconds for a late card. Any other board refusal stays an error.
 - **corp-new** also looks for the HQ in `./hq`, so a run from the folder above the HQ finds it.
 - **corp-new** check "HQ links to the department" no longer fails when the HQ has no `projects.md`.
 

@@ -81,6 +81,13 @@ def expand(state: dict, ref: str, depth: int = 0) -> dict:
     return issue
 
 
+def card(issue: dict) -> str:
+    items = issue.setdefault("project_items", [])
+    if not items:
+        items.append({"id": f"ITEM_{issue['number']}", "project": {"number": 1}, "status": None})
+    return items[0]["id"]
+
+
 def value(token: str, variables: dict):
     token = token.strip()
     if token.startswith("$"):
@@ -128,16 +135,46 @@ def graphql(state: dict, payload: dict) -> dict:
                 data[alias] = {"issue": {"id": f"I_{num}", "number": num, "url": f"https://github.com/{repo}/issues/{num}",
                                          "projectItems": {"nodes": []}}}
             elif op == "createLabel":
-                data[alias] = {"label": {"id": "LA_new"}}
+                repo = next(r for r, v in state["repos"].items() if v["id"] == arg(body, "repositoryId", variables))
+                name = arg(body, "name", variables)
+                state["repos"][repo]["labels"][name] = f"LA_{name}"
+                data[alias] = {"label": {"id": f"LA_{name}"}}
+            elif op == "addLabelsToLabelable":
+                ref, issue = by_id(state, arg(body, "labelableId", variables))
+                labels = state["repos"][repo_of(ref)]["labels"]
+                wanted = json.loads(re.search(r"labelIds:(\[.*?\])", body).group(1))
+                issue["labels"] += [name for name, label_id in labels.items() if label_id in wanted]
+                data[alias] = {"clientMutationId": None}
             elif op == "addProjectV2ItemById":
-                data[alias] = {"item": {"id": "ITEM_new"}}
+                _, issue = by_id(state, arg(body, "contentId", variables))
+                refusal = state.get("card_error")
+                if not refusal and state.get("card_delay", 0) > 0:
+                    state["card_delay"] -= 1
+                    refusal = "Content already exists in this project"
+                    if state["card_delay"] == 0:
+                        card(issue)
+                if refusal:
+                    data[alias] = None
+                    errors.append({"type": "UNPROCESSABLE", "path": [alias], "message": refusal})
+                else:
+                    data[alias] = {"item": {"id": card(issue)}}
+            elif op == "updateProjectV2ItemFieldValue":
+                item_id = arg(body, "itemId", variables)
+                item = next(i for v in state["issues"].values() for i in v.get("project_items", []) if i["id"] == item_id)
+                option = arg(body, "singleSelectOptionId", variables)[len("OPT_"):]
+                item["status"] = {"name": option.replace("_", " ").capitalize()}
+                data[alias] = {"projectV2Item": {"id": item_id}}
             else:
                 data[alias] = {"clientMutationId": None}
-        return {"data": data}
+        return {"data": data, "errors": errors} if errors else {"data": data}
 
     data["rateLimit"] = {"remaining": 4999, "resetAt": "2026-10-29T11:00:00Z", "cost": 1}
     if re.search(r"\bviewer\s*\{", q):
         data["viewer"] = {"id": "U_me", "login": "me"}
+    node = re.search(rf"\bnode\(id:({STR})\)", q)
+    if node:
+        ref, _ = by_id(state, json.loads(node.group(1)))
+        data["node"] = expand(state, ref)
     repo_re = re.compile(rf"(\w+): repository\(owner:({STR}), name:({STR})\)\s*\{{")
     matches = list(repo_re.finditer(q))
     for idx, m in enumerate(matches):
@@ -236,9 +273,12 @@ def main() -> int:
     if args[:2] == ["api", "graphql"]:
         payload = json.load(sys.stdin)
         log({"args": args, "query": payload["query"][:80]})
-        print(json.dumps(graphql(state, payload), ensure_ascii=False))
+        answer = graphql(state, payload)
+        print(json.dumps(answer, ensure_ascii=False))
         save(state)
-        return 0
+        for error in answer.get("errors", []):
+            print(f"gh: {error['message']}", file=sys.stderr)
+        return 1 if "errors" in answer else 0
     if args and args[0] == "api":
         log({"args": args})
         code = rest(state, args)

@@ -43,7 +43,7 @@ on_exit() {
 }
 trap on_exit EXIT
 
-CMD=""; CALLS=0; DRY=0; FORCE=0; HELP=0; RATE_REMAINING=null; DRY_REQS=0
+CMD=""; CALLS=0; DRY=0; FORCE=0; HELP=0; RATE_REMAINING=null; DRY_REQS=0; CARD=""
 ACTIONS='[]'; SKIPPED='[]'; WARNS='[]'; EXTRA='{}'
 
 jpush() { jq -c --arg s "$2" '. + [$s]' <<<"$1"; }
@@ -151,6 +151,7 @@ gql() {
   fi
   if [ "$kind" = write ] && jq -e '(.errors // []) | length > 0' >/dev/null <<<"$RESP"; then
     msg=$(jq -r '[.errors[].message] | join("; ")' <<<"$RESP")
+    [ "$msg" != "Content already exists in this project" ] || return 0
     die "мутация отклонена: $msg"
   fi
   return 0
@@ -241,6 +242,21 @@ read_one() {
   extra ref "$(jstr "$o/$r#$n")"
 }
 
+attach_card() {
+  local id="$1" pause
+  for pause in 0 1 2 3 4; do
+    sleep "$pause"
+    gql "mutation { pa: addProjectV2ItemById(input:{projectId:\"$P_ID\", contentId:$(gqlstr "$id")}) { item { id } } }" '' write
+    if [ "$DRY" = 1 ]; then CARD="<id карточки>"; act "добавлен в Project #$P_NUM"; return 0; fi
+    CARD=$(jq -r '.data.pa.item.id // empty' <<<"$RESP")
+    if [ -n "$CARD" ]; then act "добавлен в Project #$P_NUM"; return 0; fi
+    gql "query { rateLimit { remaining resetAt cost } node(id:$(gqlstr "$id")) { ... on Issue { projectItems(first:20) { nodes { id project { number } } } } } }"
+    CARD=$(jq -r --argjson pnum "$P_NUM" '[.data.node.projectItems.nodes[]? | select(.project.number==$pnum)][0].id // empty' <<<"$RESP")
+    if [ -n "$CARD" ]; then skip "на доске #$P_NUM уже есть"; return 0; fi
+  done
+  die "GitHub отвечает, что карточка на доске #$P_NUM уже есть, а чтением её не видно: через минуту повтори ensure"
+}
+
 cmd_read() {
   [ $# -gt 0 ] || usage "read: нужен хотя бы один owner/repo#N"
   local a; for a in "$@"; do case "$a" in -*) usage "read: неизвестный флаг $a" ;; esac; check_ref "$a"; done
@@ -274,7 +290,7 @@ cmd_read() {
 ensure_core() {
   local ref="$1" week="$2" pref="$3" status="$4" replace="$5"
   local q T issue_id repo_id state lbl_id viewer_id has_week n_assignees cur_parent item cur_status
-  local pid="" ptotal=0 pstate="" m1="" m2="" need_lbl2=0 need_st2=0 opt o r n tref
+  local pid="" ptotal=0 pstate="" m1="" m2="" need_lbl2=0 need_card=0 need_st2=0 opt o r n tref
   read -r o r n <<<"$(parse_ref "$ref")"; tref="$o/$r#$n"
   q="$QHEAD viewer { id login }
     t: $(repo_alias "$o" "$r") { issue(number:$n) { ...F } lbl: label(name:$(gqlstr "$week")) { id } }"
@@ -332,9 +348,7 @@ ensure_core() {
   if [ "$HAS_PROJECT" != 1 ]; then
     warn "Project не настроен (config.example.json): место на доске и Status пропущены"
   elif [ -n "$item" ]; then skip "на доске #$P_NUM уже есть"
-  else
-    m1+=" pa: addProjectV2ItemById(input:{projectId:\"$P_ID\", contentId:$(gqlstr "$issue_id")}) { item { id } }"
-    act "добавлен в Project #$P_NUM"
+  else need_card=1
   fi
   if [ "$HAS_PROJECT" != 1 ] || [ "$state" != OPEN ]; then :
   elif [ -n "$status" ]; then
@@ -356,18 +370,13 @@ ensure_core() {
     warn "родитель $cur_parent не на доске #$P_NUM: прогони ensure для него"
   fi
 
-  if [ -z "$m1" ] && [ "$need_st2" = 0 ]; then return 0; fi
   if [ -n "$m1" ]; then gql "mutation { $m1 }" '' write; fi
-  if [ "$need_lbl2" = 1 ] || [ "$need_st2" = 1 ]; then
-    local new_lbl new_item
-    if [ "$DRY" = 1 ]; then new_lbl="<id метки из мутации 1>"; new_item="<id карточки из мутации 1>"
-    else
-      new_lbl=$(jq -r '.data.cl.label.id // empty' <<<"$RESP"); new_item=$(jq -r '.data.pa.item.id // empty' <<<"$RESP")
-    fi
-    [ "$need_lbl2" = 1 ] && m2+=" l: addLabelsToLabelable(input:{labelableId:$(gqlstr "$issue_id"), labelIds:[$(gqlstr "$new_lbl")]}) { clientMutationId }"
-    [ "$need_st2" = 1 ] && m2+=" st: updateProjectV2ItemFieldValue(input:{projectId:\"$P_ID\", itemId:$(gqlstr "$new_item"), fieldId:\"$P_STATUS_FIELD\", value:{singleSelectOptionId:\"$(status_opt "$status")\"}}) { projectV2Item { id } }"
-    gql "mutation { $m2 }" '' write
-  fi
+  local new_lbl="<id метки из мутации 1>"
+  [ "$DRY" = 1 ] || new_lbl=$(jq -r '.data.cl.label.id // empty' <<<"$RESP")
+  [ "$need_card" = 0 ] || attach_card "$issue_id"
+  [ "$need_lbl2" = 0 ] || m2+=" l: addLabelsToLabelable(input:{labelableId:$(gqlstr "$issue_id"), labelIds:[$(gqlstr "$new_lbl")]}) { clientMutationId }"
+  [ "$need_st2" = 0 ] || m2+=" st: updateProjectV2ItemFieldValue(input:{projectId:\"$P_ID\", itemId:$(gqlstr "$CARD"), fieldId:\"$P_STATUS_FIELD\", value:{singleSelectOptionId:\"$(status_opt "$status")\"}}) { projectV2Item { id } }"
+  [ -z "$m2" ] || gql "mutation { $m2 }" '' write
 }
 
 cmd_ensure() {
@@ -456,9 +465,7 @@ cmd_create() {
   [ -z "$lbl_id" ] && m2+=" l: addLabelsToLabelable(input:{labelableId:$(gqlstr "$new_id"), labelIds:[$(gqlstr "$new_lbl")]}) { clientMutationId }"
   if [ "$HAS_PROJECT" = 1 ]; then
     if [ -z "$new_item" ]; then
-      gql "mutation { pa: addProjectV2ItemById(input:{projectId:\"$P_ID\", contentId:$(gqlstr "$new_id")}) { item { id } } }" '' write
-      new_item=$(jq -r '.data.pa.item.id // empty' <<<"$RESP")
-      [ "$DRY" = 1 ] && new_item="<id карточки>"
+      attach_card "$new_id"; new_item="$CARD"
     fi
     m2+=" st: updateProjectV2ItemFieldValue(input:{projectId:\"$P_ID\", itemId:$(gqlstr "$new_item"), fieldId:\"$P_STATUS_FIELD\", value:{singleSelectOptionId:\"$(status_opt "$status")\"}}) { projectV2Item { id } }"
     act "Status → $status"

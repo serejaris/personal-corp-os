@@ -44,6 +44,8 @@ class Sandbox:
         bin_dir.mkdir()
         shutil.copy(FIXTURES / "gh", bin_dir / "gh")
         (bin_dir / "gh").chmod(0o755)
+        (bin_dir / "sleep").write_text("#!/bin/sh\n", encoding="utf-8")
+        (bin_dir / "sleep").chmod(0o755)
         self.env = {
             **os.environ,
             "PATH": f"{bin_dir}{os.pathsep}{os.environ['PATH']}",
@@ -76,6 +78,10 @@ class Sandbox:
         if code is not None:
             require(proc.returncode == code, f"{label}: exit {proc.returncode}, want {code}: {lines[0]}")
         return out, proc.stderr
+
+    def patch(self, **fields) -> None:
+        state = json.loads(self.state.read_text(encoding="utf-8"))
+        self.state.write_text(json.dumps({**state, **fields}, ensure_ascii=False), encoding="utf-8")
 
     def issue(self, number: int) -> dict:
         return json.loads(self.state.read_text(encoding="utf-8"))["issues"][f"{REPO}#{number}"]
@@ -153,6 +159,56 @@ def check_read_ensure_create(box: Sandbox) -> None:
     require(box.issue(21)["parent"] == f"{REPO}#11", "new issue must sit under its epic")
 
 
+def card_status(box: Sandbox, number: int) -> str | None:
+    cards = box.issue(number)["project_items"]
+    require(len(cards) == 1, f"#{number} must have one card, got {cards}")
+    return (cards[0]["status"] or {}).get("name")
+
+
+def check_card_on_board(box: Sandbox) -> None:
+    """GitHub puts the card on the board itself, a moment after createIssue answers without it.
+    In that window addProjectV2ItemById refuses with "Content already exists in this project"."""
+    body = box.file("body.md", "Карточка встаёт сама.\n")
+    create = ("create", "--repo", REPO, "--body-file", body, "--parent", f"{REPO}#11", "--no-origin")
+
+    box.patch(card_delay=1)
+    out, _ = box.run(*create, "--title", "Card landed", "--week", "W45", "--status", "In progress")
+    require(out["ok"] is True and out["result"] == "done" and out["created"] is True, f"card on the board is no error: {out}")
+    require(card_status(box, 21) == "In progress", "create must set Status on the card it found")
+    require(box.issue(21)["labels"] == ["W45"], "create must finish the label after the refusal")
+    require(any("уже есть" in s for s in out["skipped"]), f"create must report the card it found: {out}")
+    require(not any("добавлен" in a for a in out["actions"]), f"nothing was added: {out}")
+
+    box.patch(card_delay=2)
+    out, _ = box.run(*create, "--title", "Card landed late", "--week", "W44", "--status", "Ready")
+    require(out["ok"] is True and out["result"] == "done", f"create must wait for a late card: {out}")
+    require(card_status(box, 22) == "Ready", "create must set Status on the late card")
+
+    box.patch(card_delay=99)
+    out, _ = box.run(*create, "--title", "Card lost", "--week", "W44", "--status", "Ready", code=1)
+    require(out["ok"] is False and out["ref"] == f"{REPO}#23" and "ensure" in out["error"], f"card never seen: {out}")
+    box.patch(card_delay=0)
+    out, _ = box.run("ensure", f"{REPO}#23", "--week", "W44", "--status", "Ready")
+    require(out["result"] == "done" and card_status(box, 23) == "Ready", f"ensure must finish what create left: {out}")
+
+    box.patch(card_error="Resource not accessible by personal access token")
+    out, _ = box.run(*create, "--title", "Card refused", "--week", "W44", "--status", "Ready", code=1)
+    require("Resource not accessible" in out["error"], f"another refusal stays an error: {out}")
+    box.patch(card_error="")
+
+    out, stderr = box.run("--dry-run", "ensure", f"{REPO}#17", "--week", "W44", "--status", "Ready")
+    require(out["result"] == "dry-run" and "addProjectV2ItemById" in stderr, f"ensure --dry-run must show the add: {out}")
+    require(box.issue(17)["project_items"] == [], "ensure --dry-run must not touch the board")
+
+    box.patch(card_delay=1)
+    out, _ = box.run("ensure", f"{REPO}#17", "--week", "W44", "--parent", f"{REPO}#11", "--status", "Ready")
+    require(out["ok"] is True and out["result"] == "done", f"ensure must take the card it finds: {out}")
+    require(box.issue(17)["labels"] == ["W44"], "ensure must keep the label set next to the refused add")
+    require(card_status(box, 17) == "Ready", "ensure must set Status on the card it found")
+    out, _ = box.run("ensure", f"{REPO}#17", "--week", "W44", "--status", "Ready")
+    require(out["skipped"] and any("уже есть" in s for s in out["skipped"]), f"ensure rerun: {out}")
+
+
 def check_comment_now_close_block(box: Sandbox) -> None:
     work = box.file("work.md", "Письмо уходит после входа.\n")
     url = f"https://github.com/{REPO}/blob/{'a' * 40}/shots/welcome.png?raw=true"
@@ -220,7 +276,8 @@ def main() -> None:
     with tempfile.TemporaryDirectory() as temp:
         base = Path(temp)
         for name, check in (("errors", check_errors), ("read", check_read_ensure_create),
-                            ("write", check_comment_now_close_block), ("shot", check_shot)):
+                            ("card", check_card_on_board), ("write", check_comment_now_close_block),
+                            ("shot", check_shot)):
             work = base / name
             work.mkdir()
             check(Sandbox(work))
@@ -230,7 +287,7 @@ def main() -> None:
     if "--show" in sys.argv:
         print(read)
         print(table)
-    print(f"OK: gh_issue.sh one JSON line per run, ensure noop, create dedup, close guard, board, shot to shots branch by SHA ({SCRIPT.name})")
+    print(f"OK: gh_issue.sh one JSON line per run, ensure noop, create dedup, card already on the board, close guard, board, shot to shots branch by SHA ({SCRIPT.name})")
 
 
 if __name__ == "__main__":
