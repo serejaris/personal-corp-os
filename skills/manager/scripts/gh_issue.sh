@@ -448,26 +448,23 @@ cmd_create() {
   [ "$HAS_PROJECT" = 1 ] && pids="projectV2Ids:[\"$P_ID\"]"
   m1+=" ci: createIssue(input:{repositoryId:$(gqlstr "$repo_id"), title:\$title, body:\$body, $labels
         assigneeIds:[$(gqlstr "$viewer_id")], parentIssueId:$(gqlstr "$pid") ${pids:+, $pids}}) {
-        issue { id number url projectItems(first:5) { nodes { id project { number } } } } }"
+        issue { id number url } }"
   vars=$(jq -cn --arg title "$title" --arg body "$body" '{title:$title, body:$body}')
   gql "mutation(\$title:String!, \$body:String) { $m1 }" "$vars" write
   if [ "$HAS_PROJECT" = 1 ]; then act "создан issue (label $week, assignee @me, parent $parent, Project #$P_NUM)"
   else act "создан issue (label $week, assignee @me, parent $parent)"
        warn "Project не настроен (config.example.json): место на доске и Status пропущены"; fi
-  local new_id new_item new_lbl num m2=""
-  if [ "$DRY" = 1 ]; then new_id="<id нового issue>"; new_item="<id карточки>"; new_lbl="<id метки>"; num="?"
+  local new_id new_lbl num m2=""
+  if [ "$DRY" = 1 ]; then new_id="<id нового issue>"; new_lbl="<id метки>"; num="?"
   else
     new_id=$(jq -r '.data.ci.issue.id' <<<"$RESP"); num=$(jq -r '.data.ci.issue.number' <<<"$RESP")
-    new_item=$(jq -r --argjson pnum "$P_NUM" '[.data.ci.issue.projectItems.nodes[] | select(.project.number==$pnum)][0].id // empty' <<<"$RESP")
     new_lbl=$(jq -r '.data.cl.label.id // empty' <<<"$RESP")
     extra ref "$(jstr "$repo#$num")"; extra url "$(jq -c '.data.ci.issue.url' <<<"$RESP")"
   fi
   [ -z "$lbl_id" ] && m2+=" l: addLabelsToLabelable(input:{labelableId:$(gqlstr "$new_id"), labelIds:[$(gqlstr "$new_lbl")]}) { clientMutationId }"
   if [ "$HAS_PROJECT" = 1 ]; then
-    if [ -z "$new_item" ]; then
-      attach_card "$new_id"; new_item="$CARD"
-    fi
-    m2+=" st: updateProjectV2ItemFieldValue(input:{projectId:\"$P_ID\", itemId:$(gqlstr "$new_item"), fieldId:\"$P_STATUS_FIELD\", value:{singleSelectOptionId:\"$(status_opt "$status")\"}}) { projectV2Item { id } }"
+    attach_card "$new_id"
+    m2+=" st: updateProjectV2ItemFieldValue(input:{projectId:\"$P_ID\", itemId:$(gqlstr "$CARD"), fieldId:\"$P_STATUS_FIELD\", value:{singleSelectOptionId:\"$(status_opt "$status")\"}}) { projectV2Item { id } }"
     act "Status → $status"
   fi
   [ -z "$m2" ] || gql "mutation { $m2 }" '' write

@@ -194,6 +194,9 @@ def check_card_on_board(box: Sandbox) -> None:
     require("Resource not accessible" in out["error"], f"another refusal stays an error: {out}")
     box.patch(card_error="")
 
+    out, stderr = box.run("--dry-run", *create, "--title", "Card planned", "--week", "W44", "--status", "Ready")
+    require(out["result"] == "dry-run" and "addProjectV2ItemById" in stderr, f"create --dry-run must show the add: {out}")
+
     out, stderr = box.run("--dry-run", "ensure", f"{REPO}#17", "--week", "W44", "--status", "Ready")
     require(out["result"] == "dry-run" and "addProjectV2ItemById" in stderr, f"ensure --dry-run must show the add: {out}")
     require(box.issue(17)["project_items"] == [], "ensure --dry-run must not touch the board")

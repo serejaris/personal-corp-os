@@ -132,8 +132,7 @@ def graphql(state: dict, payload: dict) -> dict:
                                         "body": arg(body, "body", variables), "labels": [], "assignees": ["me"],
                                         "parent": parent_ref, "project_items": [], "comments": []}
                 parent.setdefault("sub_issues", []).append(ref)
-                data[alias] = {"issue": {"id": f"I_{num}", "number": num, "url": f"https://github.com/{repo}/issues/{num}",
-                                         "projectItems": {"nodes": []}}}
+                data[alias] = {"issue": {"id": f"I_{num}", "number": num, "url": f"https://github.com/{repo}/issues/{num}"}}
             elif op == "createLabel":
                 repo = next(r for r, v in state["repos"].items() if v["id"] == arg(body, "repositoryId", variables))
                 name = arg(body, "name", variables)

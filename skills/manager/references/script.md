@@ -48,14 +48,16 @@ Id доски, поля и опций живут только в `config.json`: 
 | Действие | Команда | Вызовов API |
 |---|---|---|
 | Прочитать состояние 1–20 issues | `read REF REF …` | 1 |
-| Создать задачу | `create --repo O/R --title T --body-file F --week W44 --parent REF [--status S]` | 3–5 |
-| Довести issue до инвариантов 1–5 | `ensure REF --week W44 [--parent REF] [--status S]` | 1–4 |
+| Создать задачу | `create --repo O/R --title T --body-file F --week W44 --parent REF [--status S]` | 2–5 |
+| Довести issue до инвариантов 1–5 | `ensure REF --week W44 [--parent REF] [--status S]` | 1–5 |
 | Запись о работе | `comment REF --body-file F [--image-url URL]` | 2 |
 | Положить картинку и получить ссылку по SHA | `shot REF --image shot.png [--dir shots]` | 3 |
 | Заменить секцию `## Сейчас` | `now REF --text "…"` | 2 |
 | Закрыть с Proof | `close REF --proof-file F [--reason not_planned]` | 3 |
 | A ждёт B | `block A --by B` | 2 |
 | Пересобрать таблицу эпика | `board EPIC` | 2 |
+
+Поздняя карточка доводит `create` и `ensure` до 13 вызовов.
 
 ## Правила, которые скрипт держит сам
 
@@ -69,7 +71,7 @@ Id доски, поля и опций живут только в `config.json`: 
 
 - `gh api graphql` при `errors` игнорирует `--jq`, поэтому скрипт разбирает ответ через `jq` целиком.
 - `gh project item-list` обрезает большую доску, поэтому карточку на доске скрипт читает через `issue.projectItems`.
-- GitHub ставит карточку на доску через 1–2 секунды после `createIssue`, а ответ мутации приходит без неё. В это окно `addProjectV2ItemById` отвечает `Content already exists in this project`, поэтому `create` и `ensure` берут id карточки чтением, если надо ждут до 10 секунд и ставят статус. Другой отказ доски остаётся ошибкой.
+- Карточку ставят `projectV2Ids` в `createIssue` и workflow доски «Auto-add sub-issues to project». Она появляется через 1–2 секунды, а ответ мутации приходит без неё. В это окно `addProjectV2ItemById` отвечает `Content already exists in this project`, поэтому `create` и `ensure` берут id карточки чтением, если надо ждут до 10 секунд и ставят статус. Другой отказ доски остаётся ошибкой.
 - `gh issue close --comment` на закрытом issue молча ничего не пишет, поэтому `close` сам проверяет состояние и Proof в таймлайне.
 - Ссылка на картинку по имени ветки ломается после удаления ветки, поэтому `shot` отдаёт ссылку по SHA коммита.
 - Страховка на выходе печатает строку JSON, даже если скрипт упал молча; ошибки вызова проверяются до любого `$(…)`, чтобы дойти одной строкой.
