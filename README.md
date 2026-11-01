@@ -254,6 +254,7 @@ Replace `cc-analytics` with any skill name from the table below.
 | [html-draft](./skills/html-draft/) | One technical diagram in flat blueprint style: architecture, flows |
 | [make-landing](./skills/make-landing/) | Reference-led design variants: frozen concepts, gallery, human choice and a second round |
 | [make-3d](./skills/make-3d/) | 3D variants in scene copies, matching image sheets, human choice and transfer to the canon |
+| [ai-video](./skills/ai-video/) | Structured video prompts with camera, lighting, and sound specifications (Seedance, Grok, Kling, Runway) |
 
 ### Agent orchestration
 

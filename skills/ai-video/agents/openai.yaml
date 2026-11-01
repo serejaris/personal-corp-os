@@ -1,0 +1,6 @@
+interface:
+  display_name: "AI Video Director & Connector"
+  short_description: "Direct, prompt, and generate AI videos (Grok, Fal, Runway, Kling, Luma, Wan)"
+  icon_small: "./assets/ai-video-small.svg"
+  icon_large: "./assets/ai-video.png"
+  default_prompt: "Plan and structure an AI video generation request, choose the best provider (Grok, Runway, Kling, Fal/MCP), and format the prompt spec."
