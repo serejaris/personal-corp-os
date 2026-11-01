@@ -10,7 +10,7 @@ from pathlib import Path
 import sys
 from typing import Any, Dict, List, Optional
 
-SUPPORTED_FORMATS = {"grok", "runway", "kling", "luma", "wan", "generic"}
+SUPPORTED_FORMATS = {"seedance", "grok", "runway", "kling", "luma", "wan", "generic"}
 DEFAULT_FORMAT = "generic"
 DEFAULT_SIZE = "1280x720"
 DEFAULT_SECONDS = 5
@@ -91,6 +91,34 @@ def format_for_provider(spec: Dict[str, Any], target_format: str) -> str:
     dialogue = spec.get("dialogue")
     constraints = spec.get("constraints")
     avoid = spec.get("avoid")
+
+    if target_format == "seedance":
+        lines = []
+        if primary:
+            lines.append(primary)
+        if scene:
+            lines.append(f"Scene: {scene}")
+        if subject:
+            lines.append(f"Character/Subject: {subject}")
+        if action:
+            lines.append(f"Action: {action}")
+        if camera:
+            lines.append(f"Camera movement: {camera}")
+        if lighting:
+            lines.append(f"Lighting & Atmosphere: {lighting}")
+        if palette:
+            lines.append(f"Color tone: {palette}")
+        if timing:
+            lines.append(f"Pacing: {timing}")
+        if audio:
+            lines.append(f"Audio & SFX: {audio}")
+        if dialogue:
+            lines.append(f"Dialogue: {dialogue}")
+        if constraints:
+            lines.append(f"Style: {constraints}")
+        if avoid:
+            lines.append(f"Negative prompt: {avoid}")
+        return "\n".join(lines)
 
     if target_format == "grok":
         lines = []

@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-- **ai-video** (`skills/ai-video/`): AI video director, prompt engineer, and universal connector across modern video generation engines (xAI Grok Video, Fal.ai MCP, Runway MCP, Kling, Luma, Wan) via API, MCP, or web subscriptions. Bundles provider connection guide, shot/cinematic presets, and `scripts/video_gen.py` prompt formatter.
+- **ai-video** (`skills/ai-video/`): режиссура видеопромптов и подготовка сцен для современных видеогенераторов (ByteDance Seedance 2.5, Kling 3.0, Wan 3.0, Grok Video 1.5, Runway Gen-3). Помогает человеку описать движение камеры, свет, действие и звук, включает гид по подпискам и веб-сервисам (Dreamina, Grok, Kling) и консольный генератор `scripts/video_gen.py`.
 - **corp-new** offers a ready IT department template (`templates/corp-it/`): ten rules (read first, secrets never stored or printed, access recorded in a skill once), a glossary, an engineer agent, a `devices/` inventory folder, the skill `device-inventory` (inventory template and read-only snapshot scripts for macOS and Linux) and the skill `machine-access`.
 - **memory-cleanup**: find and kill process tails that hold memory on macOS and Linux — idle Claude Code desktop sessions, closed-app leftovers, orphaned workers, zombies. Read-only snapshot scripts, kill only on the owner's word with a TERM → KILL pass, swap and pressure before and after.
 
