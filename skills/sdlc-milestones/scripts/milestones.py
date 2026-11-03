@@ -1,9 +1,4 @@
 #!/usr/bin/env python3
-"""Статус вех AI-native SDLC по git-истории папки intent/<дата>-<slug>/.
-
-Использование:
-  milestones.py <папка> [--pr owner/repo#N]
-"""
 import argparse
 import json
 import subprocess
@@ -23,8 +18,7 @@ def git(repo, *args):
     return out.stdout.strip() if out.returncode == 0 else ""
 
 
-def history(repo, path):
-    """Коммиты файла от старых к новым: (sha, iso-время, автор)."""
+def commits_oldest_first(repo, path):
     log = git(repo, "log", "--follow", "--reverse", "--format=%h|%cI|%an", "--", str(path))
     return [tuple(line.split("|", 2)) for line in log.splitlines() if line]
 
@@ -48,10 +42,14 @@ def pr_state(ref):
 
 
 def main():
-    ap = argparse.ArgumentParser()
+    ap = argparse.ArgumentParser(
+        description="Статус вех AI-native SDLC по git-истории папки intent/<дата>-<slug>/.",
+    )
     ap.add_argument("folder")
     ap.add_argument("--pr", help="owner/repo#N")
     args = ap.parse_args()
+    if args.pr and (args.pr.count("#") != 1 or "/" not in args.pr.split("#")[0]):
+        sys.exit(f"--pr ждёт owner/repo#N, получено {args.pr!r}")
 
     folder = Path(args.folder).resolve()
     if not folder.is_dir():
@@ -64,7 +62,7 @@ def main():
     next_gate = None
     for num, stage, name, gate in ARTIFACTS:
         path = folder / name
-        hist = history(repo, path) if path.exists() else []
+        hist = commits_oldest_first(repo, path) if path.exists() else []
         if not hist:
             status = "нет файла" if not path.exists() else "не закоммичен"
             print(f"✗ {num} {stage:<8} {name:<10} {status}")
