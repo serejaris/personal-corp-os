@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **sdlc-milestones**: development milestones after the Anthropic AI-Native SDLC Playbook. Six stages (Plan, Design, Build, Test, Deploy, Maintain), each ends with a committed artifact (`intent.md`, `spec.md`, `plan.md`, verified diff, reviewed PR, incident intent) and a gate naming who accepts it. Templates for the three planning files and `scripts/milestones.py`, which reads git history of an `intent/<date>-<slug>/` folder and prints milestone status, the next gate and playbook metrics.
 - **corp-new** offers a ready IT department template (`templates/corp-it/`): ten rules (read first, secrets never stored or printed, access recorded in a skill once), a glossary, an engineer agent, a `devices/` inventory folder, the skill `device-inventory` (inventory template and read-only snapshot scripts for macOS and Linux) and the skill `machine-access`.
 - **memory-cleanup**: find and kill process tails that hold memory on macOS and Linux — idle Claude Code desktop sessions, closed-app leftovers, orphaned workers, zombies. Read-only snapshot scripts, kill only on the owner's word with a TERM → KILL pass, swap and pressure before and after.
 
