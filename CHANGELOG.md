@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **memory-cleanup**: find and kill process tails that hold memory on macOS and Linux — idle Claude Code desktop sessions, closed-app leftovers, orphaned workers, zombies. Read-only snapshot scripts, kill only on the owner's word with a TERM → KILL pass, swap and pressure before and after.
 
 ### Changed
-- `AGENTS.md` and CONTRIBUTING: every change starts with a GitHub issue, even one a reviewer found, and the commit and PR reference it (`Refs #N`).
+- `AGENTS.md`, CONTRIBUTING and the PR template: every change starts with a GitHub issue, even one a reviewer found, and the commit and PR reference it (`Refs #N`).
 - **memory-cleanup** renamed to **it-ram-doctor** (`skills/it-ram-doctor/`): same skill, new name to sit with the IT-department skills; the unreleased `memory-cleanup` entry above refers to this skill.
 - **corp-new** offers a ready research department template (`templates/corp-research/`): eight rules for sourced reports, an `INDEX.md` report catalog an empty `tags.md` dictionary and the department skill `corp-research`.
 - **corp-new** adds two files to every department: a `.gitignore` that keeps secrets, video, audio, Zoom recordings and archives out of git (a large recording left out of `.gitignore` made an agent retry a failing commit until temp files filled the disk), and a department glossary `CONTEXT.md` the agent reads before work and extends as terms are agreed. Existing departments get the missing files and `.gitignore` lines.
