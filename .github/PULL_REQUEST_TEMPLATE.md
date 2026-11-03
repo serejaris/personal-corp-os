@@ -12,6 +12,7 @@ Brief description of changes.
 
 ## Checklist
 
+- [ ] Refs #N — issue opened before the change (also for review fixes)
 - [ ] Follows commit conventions
 - [ ] Updated CHANGELOG.md under `[Unreleased]`
 - [ ] Documentation updated (if applicable)
