@@ -132,7 +132,8 @@ cp -r skills/name ~/.claude/skills/
 
 ## Code Style
 
-- Use English for code and comments
+- Identifiers and comments in English
+- Text a script shows the user (printed output, generated reports) and language data it matches (regex patterns, month names) may be in the skill's language
 - Documentation in both English and Russian
 - Prefer shell scripts for simple automation
 - Keep skills focused and single-purpose

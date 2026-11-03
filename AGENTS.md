@@ -32,8 +32,6 @@ Collection of Claude Code customizations: skills, statusline, hooks.
 
 Each skill folder must contain:
 - `SKILL.md` — main skill file (required)
-- `README.md` — English documentation
-- `README.ru.md` — Russian documentation
 
 Optional: additional templates, configs in the same folder.
 
