@@ -44,11 +44,12 @@ We follow [Semantic Versioning](https://semver.org/):
 
 ## Pull Requests
 
-1. Fork the repository
-2. Create feature branch: `git checkout -b feat/my-feature`
-3. Follow commit conventions
-4. Update `CHANGELOG.md` under `[Unreleased]`
-5. Run repository validation:
+1. Open an issue for the change (also for fixes found in review); the commit and PR reference it with `Refs #N`
+2. Fork the repository
+3. Create feature branch: `git checkout -b feat/my-feature`
+4. Follow commit conventions
+5. Update `CHANGELOG.md` under `[Unreleased]`
+6. Run repository validation:
 
 ```bash
 python3 scripts/validate_repo.py
@@ -57,7 +58,7 @@ claude plugin tag --dry-run --force .
 git diff --check
 ```
 
-6. Submit PR with clear description
+7. Submit PR with clear description
 
 ## Adding Skills
 

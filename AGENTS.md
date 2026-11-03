@@ -11,6 +11,8 @@ Collection of Claude Code customizations: skills, statusline, hooks.
 - Release without README updates = incomplete release
 - Public repo hygiene changes must keep `SECURITY.md`, `CODE_OF_CONDUCT.md`,
   issue templates, plugin metadata, and `scripts/validate_repo.py` aligned.
+- Every change starts with a GitHub issue, even one a reviewer found; the
+  commit and the PR reference it (`Refs #N`).
 
 ## Never
 
