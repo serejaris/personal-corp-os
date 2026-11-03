@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **corp-new** explains how to add a skill to a department, with rules files, skill folders and invocation per harness (Claude Code, Codex) and links per OS (macOS/Linux symlinks, Windows `@AGENTS.md` import and junction).
 
 ### Fixed
+- `AGENTS.md` no longer asks for `README.md` / `README.ru.md` in skill folders (missed by the removal below), and the CONTRIBUTING code-style rule now says identifiers and comments are English while script output may use the skill's language.
 - **corp-new** also looks for the HQ in `./hq`, so a run from the folder above the HQ finds it.
 - **corp-new** check "HQ links to the department" no longer fails when the HQ has no `projects.md`.
 
