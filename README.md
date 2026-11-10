@@ -254,6 +254,7 @@ Replace `cc-analytics` with any skill name from the table below.
 | [html-draft](./skills/html-draft/) | One technical diagram in flat blueprint style: architecture, flows |
 | [make-landing](./skills/make-landing/) | Reference-led design variants: frozen concepts, gallery, human choice and a second round |
 | [make-3d](./skills/make-3d/) | 3D variants in scene copies, matching image sheets, human choice and transfer to the canon |
+| [skill-cards](./skills/skill-cards/) | Educational 1080×1920 skill cards from a skill's SKILL.md: what it does, how it helps, how it works, a flow diagram |
 
 ### Agent orchestration
 
