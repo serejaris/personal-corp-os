@@ -262,6 +262,7 @@ Replace `cc-analytics` with any skill name from the table below.
 | [ceo-council](./skills/ceo-council/) | Parallel subagents as C-level experts for strategic analysis |
 | [fable-ruki-agenty](./skills/fable-ruki-agenty/) | Manual orchestration mode: specs into issues, execution to subagents |
 | [sdlc-milestones](./skills/sdlc-milestones/) | Milestones from the Anthropic AI-Native SDLC Playbook: six stages, a committed artifact (intent, spec, plan, PR) and a human gate at each, plus a status script |
+| [seo-audit](./skills/seo-audit/) | SEO audit with cross-checking: several auditors on one prompt, two blind critics verify every finding on the live site, fixes ship as three PRs with a change log |
 
 ### Docs and rules
 
@@ -282,6 +283,24 @@ Replace `cc-analytics` with any skill name from the table below.
 | [tg-bot-ops](./skills/tg-bot-ops/) | Operations playbook for Telegram bots and agent gateways |
 | [claude-sessions-sync](./skills/claude-sessions-sync/) | Sync Claude Code session records between two Anthropic accounts in the desktop app (macOS) when you switch for usage limits |
 | [it-ram-doctor](./skills/it-ram-doctor/) | Find and kill process tails holding memory: idle Claude Code sessions, closed-app leftovers, orphans; swap and pressure before and after |
+
+## Agents
+
+A skill says how to do a job. An agent is who does it: a role with its own instructions and tool set. The plugin ships agents in [`agents/`](./agents/).
+
+| Agent | Role |
+|---|---|
+| [seo-reviewer](./agents/seo-reviewer.md) | SEO auditor: checks index, links, markup and redirects on the live site, returns the top ten findings with proof and a fix |
+| [blind-critic](./agents/blind-critic.md) | Blind critic: verifies anonymized reports on one task, gives a verdict per finding and ranks the reports |
+| [uncle-bob](./agents/uncle-bob.md) | PR and process reviewer: one verdict 🟢 / 🟡 / 🔴 as a PR comment, findings as `file:line — fix` |
+| [ilyakhov](./agents/ilyakhov.md) | Text editor in Maxim Ilyakhov's information style: the reader's point first, facts instead of judgments |
+| [tufte](./agents/tufte.md) | Layout and data editor after Edward Tufte: structure first, tables instead of paragraphs with numbers |
+| [matt-pocock](./agents/matt-pocock.md) | Matt Pocock on call: proofreads documents for agents (AGENTS.md, CLAUDE.md, skills, agent files) by his `writing-for-agents` skill for synonyms, tautology and contradictions, and names the route through his open skills for your situation |
+| [sereja-ris](./agents/sereja-ris.md) | Guide to Personal Corp OS: sets it up on your machine, picks guides from sereja.tech and the @ris_ai channel for your question, retells what the vibecoders chat is discussing from messages you can read |
+
+**Claude Code.** The plugin loads the agents; they appear in `/agents` as `personal-corp-os:<name>`. Call one in plain words: "have uncle-bob review PR 12".
+
+**Codex and other harnesses.** Hand the file over as a role: "read `agents/uncle-bob.md` and review PR 12 by it".
 
 ## Other
 
