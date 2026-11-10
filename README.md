@@ -283,6 +283,23 @@ Replace `cc-analytics` with any skill name from the table below.
 | [claude-sessions-sync](./skills/claude-sessions-sync/) | Sync Claude Code session records between two Anthropic accounts in the desktop app (macOS) when you switch for usage limits |
 | [it-ram-doctor](./skills/it-ram-doctor/) | Find and kill process tails holding memory: idle Claude Code sessions, closed-app leftovers, orphans; swap and pressure before and after |
 
+## Agents
+
+A skill says how to do a job. An agent is who does it: a role with its own instructions and tool set. The plugin ships agents in [`agents/`](./agents/).
+
+| Agent | Role |
+|---|---|
+| [seo-reviewer](./agents/seo-reviewer.md) | SEO auditor: checks index, links, markup and redirects on the live site, returns the top ten findings with proof and a fix |
+| [blind-critic](./agents/blind-critic.md) | Blind critic: verifies anonymized reports on one task, gives a verdict per finding and ranks the reports |
+| [uncle-bob](./agents/uncle-bob.md) | PR and process reviewer: one verdict 🟢 / 🟡 / 🔴 as a PR comment, findings as `file:line — fix` |
+| [ilyakhov](./agents/ilyakhov.md) | Text editor in Maxim Ilyakhov's information style: the reader's point first, facts instead of judgments |
+| [tufte](./agents/tufte.md) | Layout and data editor after Edward Tufte: structure first, tables instead of paragraphs with numbers |
+| [matt-pocock](./agents/matt-pocock.md) | Guide to Matt Pocock's engineering method: names the route and the skill for your situation, links to his open skills |
+
+**Claude Code.** The plugin loads the agents; they appear in `/agents` as `personal-corp-os:<name>`. Call one in plain words: "have uncle-bob review PR 12".
+
+**Codex and other harnesses.** Hand the file over as a role: "read `agents/uncle-bob.md` and review PR 12 by it".
+
 ## Other
 
 ### [Statusline](./statusline/)
