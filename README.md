@@ -295,7 +295,7 @@ A skill says how to do a job. An agent is who does it: a role with its own instr
 | [uncle-bob](./agents/uncle-bob.md) | PR and process reviewer: one verdict 🟢 / 🟡 / 🔴 as a PR comment, findings as `file:line — fix` |
 | [ilyakhov](./agents/ilyakhov.md) | Text editor in Maxim Ilyakhov's information style: the reader's point first, facts instead of judgments |
 | [tufte](./agents/tufte.md) | Layout and data editor after Edward Tufte: structure first, tables instead of paragraphs with numbers |
-| [matt-pocock](./agents/matt-pocock.md) | Guide to Matt Pocock's engineering method: names the route and the skill for your situation, links to his open skills |
+| [matt-pocock](./agents/matt-pocock.md) | Matt Pocock on call: proofreads documents for agents (AGENTS.md, CLAUDE.md, skills, agent files) by his `writing-for-agents` skill for synonyms, tautology and contradictions, and names the route through his open skills for your situation |
 | [sereja-ris](./agents/sereja-ris.md) | Guide to Personal Corp OS: sets it up on your machine, picks guides from sereja.tech and the @ris_ai channel for your question, retells what the vibecoders chat is discussing from messages you can read |
 
 **Claude Code.** The plugin loads the agents; they appear in `/agents` as `personal-corp-os:<name>`. Call one in plain words: "have uncle-bob review PR 12".
