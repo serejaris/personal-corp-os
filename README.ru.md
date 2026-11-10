@@ -264,6 +264,7 @@ Use Personal Corp skills to plan my week.
 | [ceo-council](./skills/ceo-council/) | Параллельные субагенты в ролях C-level для стратегического разбора |
 | [fable-ruki-agenty](./skills/fable-ruki-agenty/) | Ручной режим оркестрации: спеки в задачи, исполнение раздаётся субагентам |
 | [sdlc-milestones](./skills/sdlc-milestones/) | Вехи по плейбуку Anthropic AI-Native SDLC: шесть стадий, на каждой коммит артефакта (intent, spec, plan, PR) и ворота человека, плюс скрипт статуса |
+| [seo-audit](./skills/seo-audit/) | SEO-аудит с перекрёстной проверкой: несколько аудиторов на одном задании, два слепых критика проверяют каждую находку на живом сайте, правки идут тремя PR с журналом изменений |
 
 ### Документы и правила
 

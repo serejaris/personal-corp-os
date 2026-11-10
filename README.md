@@ -262,6 +262,7 @@ Replace `cc-analytics` with any skill name from the table below.
 | [ceo-council](./skills/ceo-council/) | Parallel subagents as C-level experts for strategic analysis |
 | [fable-ruki-agenty](./skills/fable-ruki-agenty/) | Manual orchestration mode: specs into issues, execution to subagents |
 | [sdlc-milestones](./skills/sdlc-milestones/) | Milestones from the Anthropic AI-Native SDLC Playbook: six stages, a committed artifact (intent, spec, plan, PR) and a human gate at each, plus a status script |
+| [seo-audit](./skills/seo-audit/) | SEO audit with cross-checking: several auditors on one prompt, two blind critics verify every finding on the live site, fixes ship as three PRs with a change log |
 
 ### Docs and rules
 
